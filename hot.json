@@ -1505,5 +1505,11 @@
    "cover": "https://sns-webpic-qc.xhscdn.com/202610222140/49b81e013d99f11f8ce52ffe3e660363/notes_pre_post/1040g3k0324l96d7nnke04a0tc5l97nlntp7c13g!nc_n_webp_mw_1",
    "body": "（实时笔记·页面可见正文需点开笔记阅读）「收下这份清单」=收藏指令。"
   }
- ]
+ ],
+ "_meta": {
+  "updatedAt": 1792684496951,
+  "mode": "GitHub 静态数据（定时采集管道写入）",
+  "source": "aiguide-console data pipeline",
+  "groups": 22
+ }
 }
