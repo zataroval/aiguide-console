@@ -2647,7 +2647,7 @@ function loadJSON2(name, cb, freshKey){
   }
   var u1 = rawURL(name), u2 = jsdURL(name);
   var n = 0;
-  function done(){ n++; if(n===2){ if(outs.length){ cb(outs[0].v); } } }
+  function done(){ n++; if(n===2 && outs.length===1){ cb(outs[0].v); } }
   if(u1){ fetch(u1,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done); } else { done(); }
   fetch(u2,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done);
 }
