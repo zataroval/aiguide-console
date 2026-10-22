@@ -2627,6 +2627,30 @@ function loadJSON(name, cb){
       fetch(name,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb).catch(function(){});
     });
 }
+function jsdURL(name){
+  return 'https://cdn.jsdelivr.net/gh/zataroval/aiguide-console@live-data/' + name + '?v=' + Date.now();
+}
+function loadJSON2(name, cb, freshKey){
+  var p = (typeof location!=='undefined' && location && location.protocol) || '';
+  if(p === 'file:' || p === ''){ return; }
+  var outs = [];
+  function feed(list, key){
+    if(!list) return;
+    var cur = (typeof key==='function') ? key(list) : (list && (list._meta ? list._meta.updatedAt : ''));
+    var prev = (typeof key==='function') ? null : null;
+    outs.push({k:cur, v:list});
+    if(outs.length===2){
+      var best = outs[0];
+      if(outs[1].k > best.k){ best = outs[1]; }
+      cb(best.v);
+    }
+  }
+  var u1 = rawURL(name), u2 = jsdURL(name);
+  var n = 0;
+  function done(){ n++; if(n===2){ if(outs.length){ cb(outs[0].v); } } }
+  if(u1){ fetch(u1,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done); } else { done(); }
+  fetch(u2,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done);
+}
 function fmtFresh(ts){
   if(!ts) return '未知';
   var diff = (Date.now() - ts) / 60000;
@@ -2653,7 +2677,7 @@ function refreshData(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ toast('本地模式数据来自内嵌快照；实时管道需在线上链接打开'); return; }
   toast('正在拉取最新数据…');
-  loadJSON('hot.json', function(d){
+  loadJSON2('hot.json', function(d){
     if(d && typeof d==='object'){
       if(d._meta){ HOT_META = d._meta; delete d._meta; }
       if(Object.keys(d).length){
@@ -2677,7 +2701,7 @@ function copyCollect(){
 (function(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ paintLive('snap'); return; } /* 本地打开：内嵌数据已就绪，不发请求 */
-  loadJSON('hot.json', function(d){
+  loadJSON2('hot.json', function(d){
     if(d && typeof d==='object' && Object.keys(d).length){
       if(d._meta){ HOT_META = d._meta; delete d._meta; }
       HOT = d;
@@ -3099,20 +3123,20 @@ function renderDrafts(){
   if(cards.length){ dyn.innerHTML = cards.join(''); }
 }
 var _draftsSig = '';
+function _fresh(list){ if(!Array.isArray(list)) return ''; var m=''; for(var i=0;i<list.length;i++){ var a=(list[i]&&list[i].at)||''; if(a>m) m=a; } return m; }
+function draftsCb(list){
+  if(!Array.isArray(list)) return;
+  var sig = list.length + '|' + _fresh(list);
+  if(sig !== _draftsSig){ _draftsSig = sig; DRAFTS = list; renderDrafts(); if(list.length){ toast('成稿区已更新（实时通道）'); } }
+}
 function draftsLoad(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ renderDrafts(); return; }
-  loadJSON('drafts.json', function(list){
-    if(Array.isArray(list)){ DRAFTS = list; _draftsSig = list.length + '|' + (list[0] ? list[0].id : ''); renderDrafts(); }
-  });
+  loadJSON2('drafts.json', draftsCb);
 }
 function draftsPoll(){
   var dyn = $('notesDyn'); if(!dyn) return;
-  loadJSON('drafts.json', function(list){
-    if(!Array.isArray(list)) return;
-    var sig = list.length + '|' + (list[0] ? list[0].id : '');
-    if(sig !== _draftsSig){ _draftsSig = sig; DRAFTS = list; renderDrafts(); if(list.length){ toast('成稿区已更新（实时通道）'); } }
-  });
+  loadJSON2('drafts.json', draftsCb);
 }
 draftsLoad();
 setInterval(draftsPoll, 20000);
