@@ -2615,7 +2615,7 @@ var HOT_META = {updatedAt:0, mode:'内嵌快照', source:'HOT_FALLBACK'};
 function rawURL(name){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === '') return null;
-  return 'https://raw.githubusercontent.com/zataroval/aiguide-console/main/' + name + '?v=' + Date.now();
+  return 'https://raw.githubusercontent.com/zataroval/aiguide-console/live-data/' + name + '?v=' + Date.now();
 }
 function loadJSON(name, cb){
   var u = rawURL(name);
