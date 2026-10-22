@@ -2611,6 +2611,20 @@ var HOT_FALLBACK = {
 /* 线上环境（GitHub Pages 等 https）加载 data/hot.json 覆盖榜单；本地 file:// 打开时直接使用内嵌数据 */
 var HOT = HOT_FALLBACK;
 var HOT_META = {updatedAt:0, mode:'内嵌快照', source:'HOT_FALLBACK'};
+/* ===== 实时数据通道：GitHub raw 直读（秒级更新，绕过 Pages 重建）+ 同源兜底 ===== */
+function rawURL(name){
+  var p = (typeof location!=='undefined' && location && location.protocol) || '';
+  if(p === 'file:' || p === '') return null;
+  return 'https://raw.githubusercontent.com/zataroval/aiguide-console/main/' + name + '?v=' + Date.now();
+}
+function loadJSON(name, cb){
+  var u = rawURL(name);
+  if(!u){ return; }
+  fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb)
+    .catch(function(){
+      fetch(name,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb).catch(function(){});
+    });
+}
 function fmtFresh(ts){
   if(!ts) return '未知';
   var diff = (Date.now() - ts) / 60000;
@@ -2637,17 +2651,17 @@ function refreshData(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ toast('本地模式数据来自内嵌快照；实时管道需在线上链接打开'); return; }
   toast('正在拉取最新数据…');
-  fetch('hot.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(function(d){
-      if(d && typeof d==='object'){
-        if(d._meta){ HOT_META = d._meta; delete d._meta; }
-        if(Object.keys(d).length){
-          HOT = d;
-          try{ renderCityTabs(); renderIndTabs(); renderAll((typeof currentCity!=='undefined'&&currentCity?currentCity:'潮州')+'·'+(typeof currentKey!=='undefined'&&currentKey?currentKey:'健身')); }catch(e){}
-          paintLive('fresh'); toast('数据已刷新');
-        } else { paintLive('snap'); }
-      }
-    }).catch(function(){ paintLive('snap'); toast('刷新失败：hot.json 暂不可达'); });
+  loadJSON('hot.json', function(d){
+    if(d && typeof d==='object'){
+      if(d._meta){ HOT_META = d._meta; delete d._meta; }
+      if(Object.keys(d).length){
+        HOT = d;
+        try{ renderCityTabs(); renderIndTabs(); renderAll((typeof currentCity!=='undefined'&&currentCity?currentCity:'潮州')+'·'+(typeof currentKey!=='undefined'&&currentKey?currentKey:'健身')); }catch(e){}
+        paintLive('fresh'); toast('数据已刷新');
+      } else { paintLive('snap'); }
+    } else { paintLive('snap'); }
+  });
+  setTimeout(function(){ if($('npLiveDot') && $('npLiveDot').style.background !== 'rgb(74, 222, 128)'){ } }, 1);
 }
 function copyCollect(){
   var c = (typeof currentCity!=='undefined' && currentCity ? currentCity : '潮州') + ' ' + (typeof currentKey!=='undefined' && currentKey ? currentKey : '健身');
@@ -2661,17 +2675,14 @@ function copyCollect(){
 (function(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ paintLive('snap'); return; } /* 本地打开：内嵌数据已就绪，不发请求 */
-  try{
-    fetch('hot.json', {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-      .then(function(d){
-        if(d && typeof d==='object' && Object.keys(d).length){
-          if(d._meta){ HOT_META = d._meta; delete d._meta; }
-          HOT = d;
-          try{ renderCityTabs(); renderIndTabs(); renderAll((typeof currentCity!=='undefined'&&currentCity?currentCity:'潮州')+'·'+(typeof currentKey!=='undefined'&&currentKey?currentKey:'健身')); }catch(e){}
-          paintLive('fresh');
-        } else { paintLive('snap'); }
-      }).catch(function(){ paintLive('snap'); });
-  }catch(e){ paintLive('snap'); }
+  loadJSON('hot.json', function(d){
+    if(d && typeof d==='object' && Object.keys(d).length){
+      if(d._meta){ HOT_META = d._meta; delete d._meta; }
+      HOT = d;
+      try{ renderCityTabs(); renderIndTabs(); renderAll((typeof currentCity!=='undefined'&&currentCity?currentCity:'潮州')+'·'+(typeof currentKey!=='undefined'&&currentKey?currentKey:'健身')); }catch(e){}
+      paintLive('fresh');
+    } else { paintLive('snap'); }
+  });
 })();
 
 function parseNum(s){
@@ -3085,13 +3096,24 @@ function renderDrafts(){
   pend.slice(0,3).forEach(function(r){ cards.unshift(draftCard({id:'p'+r.at, link:r.link, at:new Date(r.at).toLocaleString('zh-CN',{hour12:false}), acc:r.acc, title:'', body:'', covers:[], status:'pending'})); });
   if(cards.length){ dyn.innerHTML = cards.join(''); }
 }
+var _draftsSig = '';
 function draftsLoad(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ renderDrafts(); return; }
-  fetch('drafts.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(list){ if(Array.isArray(list)){ DRAFTS = list; renderDrafts(); } }).catch(function(){ renderDrafts(); });
+  loadJSON('drafts.json', function(list){
+    if(Array.isArray(list)){ DRAFTS = list; _draftsSig = list.length + '|' + (list[0] ? list[0].id : ''); renderDrafts(); }
+  });
+}
+function draftsPoll(){
+  var dyn = $('notesDyn'); if(!dyn) return;
+  loadJSON('drafts.json', function(list){
+    if(!Array.isArray(list)) return;
+    var sig = list.length + '|' + (list[0] ? list[0].id : '');
+    if(sig !== _draftsSig){ _draftsSig = sig; DRAFTS = list; renderDrafts(); if(list.length){ toast('成稿区已更新（实时通道）'); } }
+  });
 }
 draftsLoad();
+setInterval(draftsPoll, 20000);
 
 /* ================= 行业热度关键词榜（参考热度 + 中控台真实刷新） ================= */
 var KW = {
