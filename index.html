@@ -2668,6 +2668,9 @@ function paintLive(mode){
   } else if(mode==='fresh'){
     dot.style.background = '#4ADE80';
     tx.innerHTML = '数据源：线上 hot.json · 无时间戳（点"刷新数据"确认）';
+  } else if(ts){
+    dot.style.background = '#4ADE80';
+    tx.innerHTML = '数据源：线上实时管道 · 最后采集 <b>' + fmtFresh(ts) + '</b>（' + new Date(ts).toLocaleString('zh-CN',{hour12:false}) + '）';
   } else {
     dot.style.background = '#FBBF24';
     tx.innerHTML = '数据源：内嵌快照 · ' + (HOT_META && HOT_META.mode ? HOT_META.mode : '未连接实时管道') + ' · 点"立即采集"复制指令接入实时';
