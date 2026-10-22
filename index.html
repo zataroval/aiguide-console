@@ -3040,12 +3040,58 @@ $('linkBtn').addEventListener('click', function(){
   flowMark(4,'done'); flowMark(5,'done');
   var v = $('linkInput').value.trim();
   if(!v){ toast('请先粘贴小红书笔记链接'); return; }
+  if(v.indexOf('http')!==0){ toast('请粘贴完整的小红书笔记链接（http开头）'); return; }
   setPipe(1);
-  toast('已提交给中控台，正在提取图文');
-  addMsg('boss','','<b>收到笔记链接。</b>已派单：T2 内容工厂提取图文与文案 → T3 素材处理去水印 → 润色延伸 → 成稿回填图文工厂。提取完成后我会把链接对应的标题、正文、图片状态回报到这里。');
-  setTimeout(function(){ setPipe(3); addMsg('thread','T3','#A78BFA','图片已下载并完成去水印（共9张），等待改写。'); }, 1800);
-  setTimeout(function(){ setPipe(6); addMsg('thread','T2','#38BDF8','润色延伸完成，成稿已回填图文工厂页，可一键复制发布。'); }, 3600);
+  /* 写入请求队列（本地持久化，供对话端读取回填） */
+  var reqs = [];
+  try{ reqs = JSON.parse(localStorage.getItem('aiop_reqs')||'[]'); }catch(e){}
+  reqs.unshift({link:v, at:Date.now(), acc:(typeof CUR_ACC!=='undefined'?CUR_ACC:'')});
+  try{ localStorage.setItem('aiop_reqs', JSON.stringify(reqs)); }catch(e){}
+  /* 一键复制处理指令（去对话粘贴即触发真实提取） */
+  var txt = '请处理这条小红书笔记：' + v + '。提取标题/正文/图片，去水印，按当前账号「'+(typeof CUR_ACC!=='undefined'?CUR_ACC:'')+'」人设改写并回填图文工厂成稿区。';
+  var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+  var copied = false;
+  try{ copied = document.execCommand('copy'); }catch(e){}
+  ta.remove();
+  toast(copied ? '已提交并复制处理指令，粘贴到对话区即触发真实提取' : '已提交；请手动复制链接到对话区触发处理');
+  addMsg('boss','','<b>已收到链接，请求已入队。</b>'+(copied?'处理指令已复制到剪贴板，粘贴到对话区我即真实提取图文、去水印、按人设改写并回填成稿区（本页会显示处理状态）。':'请把链接发到对话区，我即真实提取处理。')+' 在此之前成稿区显示"处理中"占位，不伪造成品。');
+  renderDrafts();
+  setTimeout(function(){ setPipe(3); addMsg('thread','T3','#A78BFA','等待中控台提取图片并去水印…'); }, 1800);
+  setTimeout(function(){ setPipe(6); addMsg('thread','T2','#38BDF8','提取完成后成稿将回填图文工厂页（含真实标题/正文/封面）。'); }, 3600);
 });
+/* ================= 真实成稿回填管道（drafts.json） ================= */
+var DRAFTS = [];
+function draftCard(d){
+  var pub = pubState(d.acc, d.title);
+  var covers = (d.covers||[]).slice(0,3);
+  var imgHtml = covers.length ? covers.map(function(u){ return '<img class="note-img" src="'+u+'" alt="封面" loading="lazy" referrerpolicy="no-referrer" style="max-height:220px;object-fit:cover">'; }).join('') : '<div style="height:120px;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:12px;border:1px dashed var(--line);border-radius:8px">图片提取中…</div>';
+  var head = d.status==='pending' ? ('处理中 · ' + (d.link||'').slice(0,40)) : ('真实成稿 · 来自 ' + (d.link||'').slice(0,40));
+  return '<div class="note"><div class="note-head">'+head+' <span>'+d.at+'</span></div><div class="note-body"><div class="note-txt"><div class="note-title">《'+(d.title||'待提取标题')+'》</div><div class="note-content" style="white-space:pre-wrap;font-size:12px;color:var(--sub);margin:6px 0">'+(d.body||(d.status==='pending'?'等待中控台提取正文…':'（无正文）'))+'</div><div class="note-co" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px"><button class="np-copy" onclick="copyDraft(this)" data-d="'+d.id+'" style="font-size:11px;padding:5px 11px;border-radius:7px;border:none;cursor:pointer;background:var(--line);color:var(--fg)">复制成稿</button><button class="'+(pub?'pub-done':'')+'" onclick="togglePub(this)" data-pub="'+d.acc+'" data-title="'+d.title+'" style="font-size:11px;padding:5px 11px;border-radius:7px;border:none;cursor:pointer;background:'+(pub?'#4ADE80':'var(--line)')+';color:'+(pub?'#062A30':'var(--fg)')+'">'+(pub?'已发布':'标记已发布')+'</button></div></div><div class="note-imgs">'+imgHtml+'</div></div></div>';
+}
+function copyDraft(btn){
+  var d = DRAFTS.filter(function(x){ return x.id===btn.getAttribute('data-d'); })[0];
+  if(!d) return;
+  var txt = '【标题】'+d.title+'\n【正文】\n'+(d.body||'')+'\n【链接】'+(d.link||'');
+  var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('成稿已复制，可直接粘贴发布'); }catch(e){ toast('复制失败，请手动选择'); }
+  ta.remove();
+}
+function renderDrafts(){
+  var dyn = $('notesDyn'); if(!dyn) return;
+  var reqs = [];
+  try{ reqs = JSON.parse(localStorage.getItem('aiop_reqs')||'[]'); }catch(e){}
+  var pend = reqs.filter(function(r){ return !DRAFTS.some(function(d){ return d.link===r.link; }); });
+  var cards = DRAFTS.map(draftCard);
+  pend.slice(0,3).forEach(function(r){ cards.unshift(draftCard({id:'p'+r.at, link:r.link, at:new Date(r.at).toLocaleString('zh-CN',{hour12:false}), acc:r.acc, title:'', body:'', covers:[], status:'pending'})); });
+  if(cards.length){ dyn.innerHTML = cards.join(''); }
+}
+function draftsLoad(){
+  var p = (typeof location!=='undefined' && location && location.protocol) || '';
+  if(p === 'file:' || p === ''){ renderDrafts(); return; }
+  fetch('drafts.json',{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(list){ if(Array.isArray(list)){ DRAFTS = list; renderDrafts(); } }).catch(function(){ renderDrafts(); });
+}
+draftsLoad();
 
 /* ================= 行业热度关键词榜（参考热度 + 中控台真实刷新） ================= */
 var KW = {
