@@ -2630,7 +2630,7 @@ function loadJSON(name, cb){
 function jsdURL(name){
   return 'https://cdn.jsdelivr.net/gh/zataroval/aiguide-console@live-data/' + name + '?v=' + Date.now();
 }
-function loadJSON2(name, cb, freshKey){
+function loadJSON2(name, cb, freshKey, tries){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ return; }
   var outs = [];
@@ -2647,7 +2647,7 @@ function loadJSON2(name, cb, freshKey){
   }
   var u1 = rawURL(name), u2 = jsdURL(name);
   var n = 0;
-  function done(){ n++; if(n===2 && outs.length===1){ cb(outs[0].v); } }
+  function done(){ n++; if(n===2){ if(outs.length===1){ cb(outs[0].v); } else if(outs.length===0 && (tries||0)<4){ setTimeout(function(){ loadJSON2(name, cb, freshKey, (tries||0)+1); }, 3000); } } }
   if(u1){ fetch(u1,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done); } else { done(); }
   fetch(u2,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done);
 }
