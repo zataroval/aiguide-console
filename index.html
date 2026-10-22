@@ -2617,12 +2617,12 @@ var HOT_META = {updatedAt:0, mode:'内嵌快照', source:'HOT_FALLBACK'};
 function rawURL(name){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === '') return null;
-  return 'https://api.github.com/repos/zataroval/aiguide-console/contents/' + name + '?ref=live-data&v=' + Date.now();
+  return 'https://raw.githubusercontent.com/zataroval/aiguide-console/live-data/' + name + '?v=' + Date.now();
 }
 function loadJSON(name, cb){
   var u = rawURL(name);
   if(!u){ return; }
-  fetch(u,{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb)
+  fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb)
     .catch(function(){
       fetch(name,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb).catch(function(){});
     });
