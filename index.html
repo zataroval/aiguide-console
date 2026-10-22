@@ -3132,11 +3132,11 @@ function draftsCb(list){
 function draftsLoad(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ renderDrafts(); return; }
-  loadJSON2('drafts.json', draftsCb);
+  loadJSON2('drafts.json', draftsCb, function(list){ return _fresh(list); });
 }
 function draftsPoll(){
   var dyn = $('notesDyn'); if(!dyn) return;
-  loadJSON2('drafts.json', draftsCb);
+  loadJSON2('drafts.json', draftsCb, function(list){ return _fresh(list); });
 }
 draftsLoad();
 setInterval(draftsPoll, 20000);
