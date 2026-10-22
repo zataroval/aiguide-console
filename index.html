@@ -985,6 +985,8 @@ function showPage(id){
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
   var pg = $('page-'+id); if(pg) pg.classList.add('on');
   document.querySelectorAll('.s-item').forEach(function(s){ s.classList.toggle('on', s.getAttribute('data-page')===id); });
+  if(id==='factory' && typeof renderDrafts==='function'){ renderDrafts(); }
+  if(id==='notes' && typeof paintLive==='function'){ paintLive(); }
 }
 sideNav.addEventListener('click', function(e){
   var it = e.target.closest('.s-item'); if(!it) return;
@@ -2615,12 +2617,12 @@ var HOT_META = {updatedAt:0, mode:'内嵌快照', source:'HOT_FALLBACK'};
 function rawURL(name){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === '') return null;
-  return 'https://raw.githubusercontent.com/zataroval/aiguide-console/live-data/' + name + '?v=' + Date.now();
+  return 'https://api.github.com/repos/zataroval/aiguide-console/contents/' + name + '?ref=live-data&v=' + Date.now();
 }
 function loadJSON(name, cb){
   var u = rawURL(name);
   if(!u){ return; }
-  fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb)
+  fetch(u,{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb)
     .catch(function(){
       fetch(name,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb).catch(function(){});
     });
