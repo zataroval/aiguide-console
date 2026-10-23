@@ -144,7 +144,7 @@
   .np-head b{font-size:13px;}
   .np-head small{color:var(--sub); font-size:11px;}
   .np-persona{margin:0 12px 6px; font-size:11px; color:#BFEBDD; background:rgba(45,212,191,.08); border:1px dashed rgba(45,212,191,.35); border-radius:8px; padding:4px 10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .np-tabs{display:flex; gap:6px; align-items:center; padding:0 12px 6px;}
+  .np-tabs{display:flex; flex-wrap:wrap; gap:6px; align-items:center; padding:0 12px 6px;}
   .np-tab{font-size:11px; padding:3px 10px; border-radius:999px; border:1px solid var(--line2); color:var(--sub); background:var(--card); cursor:pointer; transition:all .15s;}
   .np-tab.on{color:#05221D; background:var(--main); border-color:var(--main); font-weight:700;}
   .np-tabs input{flex:1; min-width:50px; height:26px; background:var(--card); border:1px solid var(--line2); border-radius:8px; color:var(--ink); padding:0 8px; font-size:12px; outline:none;}
@@ -280,7 +280,15 @@
   .np-card .np-card-bd{flex:1; min-width:0; display:flex; flex-direction:column;}
   .np-card .np-title{font-size:13.5px; font-weight:700; color:var(--ink); white-space:normal; line-height:1.45; display:block;}
   .np-card .np-meta{font-size:11px; margin-top:4px;}
-  .np-card .np-full{font-size:11px; color:var(--sub); line-height:1.7; margin-top:7px; background:var(--bg); border:1px dashed var(--line2); border-radius:7px; padding:7px 9px; max-height:92px; overflow:auto;}
+  .np-card .np-full{font-size:11px; color:var(--sub); line-height:1.7; margin-top:7px; background:var(--bg); border:1px dashed var(--line2); border-radius:7px; padding:7px 9px;}
+  /* 真实正文：实体展示，超长 4 行截断 + 展开/收起 */
+  .np-card .np-full.has-body{background:transparent; border-style:solid; border-color:var(--line2); padding:8px 10px;}
+  .np-body-txt{font-size:11.5px; color:var(--ink); line-height:1.75; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere;}
+  .np-body-txt.collapsed{display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
+  .np-more{align-self:flex-start; margin-top:5px; background:none; border:none; color:var(--main); font-size:11px; cursor:pointer; font-weight:700; padding:0;}
+  .np-more:hover{text-decoration:underline;}
+  /* 无正文占位：明确标注"待提取"，不再写"需点开阅读" */
+  .np-card .np-empty{font-size:11px; color:var(--dim); text-align:center; padding:11px 9px;}
   .np-card .np-act{margin-top:8px;}
   /* 行业标签：可留存可删除 */
   .np-x{display:inline-flex; width:14px; height:14px; border-radius:50%; background:rgba(255,255,255,.14); color:var(--dim); font-size:10px; line-height:14px; text-align:center; margin-left:4px; cursor:pointer; vertical-align:middle;}
@@ -405,11 +413,55 @@
     .flow{grid-template-columns:repeat(2,1fr);}
     .xbind-in{min-width:0;}
     .np-card .np-cover{width:62px; height:84px;}
+    .np-tabs{row-gap:8px;}
+    .np-tabs input{flex:1 1 110px; min-width:0;}
+    .np-tabs button.go{flex:none;}
   }
   @media (max-width:360px){
     .cards{grid-template-columns:1fr;}
     .dash-grid .panel{padding:12px;}
     .note-head span{display:block; margin-top:2px;}
+  }
+  /* ===== 账号真实数据闭环（acc- 模块，仅本模块样式） ===== */
+  .acc-fld{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+  .acc-fld label{font-size:12px;color:var(--sub);}
+  .acc-fld input,.acc-fld select{background:var(--bg);border:1px solid var(--line2);border-radius:7px;padding:8px 10px;font-size:13px;color:var(--ink);outline:none;}
+  .acc-tip{font-size:11px;color:var(--accent);background:rgba(251,191,36,.08);border-radius:7px;padding:8px 10px;line-height:1.6;}
+  .acc-modal{position:fixed;inset:0;z-index:120;}
+  .acc-modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.55);}
+  .acc-modal-card{position:relative;max-width:420px;margin:10vh auto 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;max-height:78vh;overflow-y:auto;}
+  .acc-modal-head{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:12px;}
+  .acc-modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
+  .xbind-url{flex-basis:100%;font-size:10px;color:var(--dim);word-break:break-all;}
+  .acc-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+  .acc-slot{border:1px solid var(--line2);border-radius:9px;padding:8px;background:var(--bg);}
+  .acc-slot-h{font-size:11px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+  .acc-slot.done{border-color:rgba(74,222,128,.4);}
+  .acc-slot.ready{border-color:rgba(45,212,191,.35);}
+  .acc-slot.wait{opacity:.7;}
+  .acc-slot-m{font-size:11px;color:var(--sub);line-height:1.7;}
+  .acc-slot-m b{color:var(--ink);}
+  .acc-slot-meta{font-size:10px;color:var(--dim);margin-top:3px;}
+  .acc-src{color:var(--main);font-weight:400;}
+  .acc-slot-acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+  .acc-mini{font-size:10px;padding:5px 9px;border-radius:7px;border:1px solid var(--line2);background:var(--card2);color:var(--sub);cursor:pointer;}
+  .acc-mini:active{transform:scale(.96);}
+  .acc-post-link{font-size:10px;color:var(--dim);word-break:break-all;margin-top:4px;}
+  .acc-review{margin-top:12px;border:1px solid rgba(45,212,191,.3);border-radius:10px;padding:12px;background:rgba(45,212,191,.05);}
+  .acc-review-h{font-size:13px;font-weight:700;color:var(--main);margin-bottom:8px;}
+  .acc-review-row{font-size:12px;color:var(--sub);line-height:1.8;margin-top:4px;}
+  .acc-review-row b{color:var(--ink);}
+  .acc-review-row ol{margin:4px 0 0 18px;}
+  .acc-peer-add{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .acc-peer-add input{flex:1;min-width:140px;background:var(--bg);border:1px solid var(--line2);border-radius:7px;padding:8px 10px;font-size:12px;color:var(--ink);}
+  .acc-peer-empty{color:var(--dim);font-size:12px;line-height:1.8;padding:14px;}
+  .acc-peer-note-btn{background:var(--card2)!important;color:var(--sub)!important;}
+  .acc-peer-del{background:rgba(248,113,113,.15)!important;color:#F87171!important;}
+  @media (max-width:860px){
+    .acc-slots{grid-template-columns:1fr;}
+    .acc-modal-card{margin:8vh 12px 0;}
+    .acc-peer-add{flex-direction:column;}
+    .acc-peer-add input{min-width:0;}
   }
 </style>
 </head>
@@ -517,7 +569,7 @@
       <div style="font-size:11px;color:var(--sub);margin:0 0 8px;line-height:1.6">采集维度：<b>全国 / 本地 / 同类型旅游美食城市</b>（潮州·厦门·汕头·泉州·顺德…）。切地域→切行业→实时榜单；对我说"采集 厦门 探店 行业爆款"即时回填。</div>
       <div class="np-tabs" id="npCityTabs" style="padding:0;margin-bottom:10px"></div>
       <div id="npStatus" style="font-size:11px;color:var(--sub);margin:0 0 10px;line-height:1.6"></div>
-      <div class="p-sub">右侧展示位 = 行业爆款笔记：<b>复制链接</b> 直接拿真实小红书笔记链接（发我即可提取学习），<b>学习模仿</b> 一键派单拆解结构并按当前账号人设仿写本地版。预置健身/家居参考榜（第三方爆文拆解）；其他行业或实时数据，在对话里说"帮我搜XX行业最新高互动笔记"，我真实检索回填。</div>
+      <div class="p-sub">右侧展示位 = 行业爆款笔记：卡片内直接展示<b>完整正文</b>（超长可展开/收起），未提取的标注"待提取正文"；<b>复制链接</b> 拿真实小红书笔记链接（发我即可补提正文），<b>学习模仿</b> 基于真实正文拆解标题句式/开头钩子/段落结构/话题标签，再按当前账号人设出仿写派单（无正文时中止，不冒充成稿）。其他行业或实时数据，在对话里说"帮我搜XX行业最新高互动笔记"，我真实检索回填。</div>
       <div class="panel">
         <div class="f-head" style="margin-bottom:8px"><h3>行业爆款笔记展示位</h3><small>点赞最高 · 评论最多 · 互动最热 · 点"复制链接"拿真实链接 · 点"学习模仿"一键派单仿写</small></div>
         <div class="np-tabs" id="npTabsHot" style="padding:0;margin-bottom:12px"></div>
@@ -635,23 +687,29 @@
     <!-- ===== 页面：账号数据（小红书绑定 · 发布数据 · 对标号） ===== -->
     <section class="page" id="page-xhs">
       <div class="p-head"><h2>账号数据</h2><small>小红书号绑定 · 发布互动数据 · 同类对标号</small></div>
-      <div class="p-sub">绑定小红书号后，可按 1/3/7 天节奏读取发布数据；对标号为同类账号参考（演示榜单来自第三方拆解，真实数据由中控台检索回填）。</div>
+      <div class="p-sub">本页只记录真实数据：绑定小红书号 → 成稿标记发布时登记笔记链接与发布时间 → 发布后第 1/3/7 天读取真实赞/藏/评（手工录入，或派中控台以登录态检索后回填）→ T6 基于真实数据复盘并沉淀优化方向。页面为静态单文件，无法跨域直连小红书，所有数字均来自你录入或中控台回报，不预置演示值。</div>
       <div class="xhs-bind panel">
-        <div class="f-head" style="margin-bottom:8px"><h3>小红书号绑定</h3><small>每个发布账号可绑定一个小红书号</small></div>
+        <div class="f-head" style="margin-bottom:8px"><h3>小红书号绑定</h3><small>每个发布账号可绑定一个小红书号（号或主页链接均可）</small></div>
         <div id="xhsBindList"></div>
       </div>
       <div class="xhs-data panel">
-        <div class="f-head" style="margin-bottom:8px"><h3>发布日历排期 · 未来7天</h3><small>由T4发布运营统一排期，今日已发自动标记</small></div>
+        <div class="f-head" style="margin-bottom:8px"><h3>发布日历排期 · 未来7天</h3><small>由T4发布运营统一排期，今日已发按真实发布记录自动标记</small></div>
         <div id="xhsSched"></div>
       </div>
       <div class="xhs-data panel">
-        <div class="f-head" style="margin-bottom:8px"><h3>发布内容数据 · 1/3/7天</h3><small>按账号读取点赞/收藏/评论/私信转化，用于复盘与下轮优化</small></div>
+        <div class="f-head" style="margin-bottom:8px"><h3>发布内容数据 · 1/3/7天 <span id="accCurName" style="font-size:11px;color:var(--accent);font-weight:400;"></span></h3><small>按当前账号读取点赞/收藏/评论，每档记录读取时间与来源，用于复盘与下轮优化</small></div>
         <div id="xhsPosts"></div>
-        <div style="margin-top:10px"><button class="pb-btn" id="xhsRefresh">刷新数据（派单中控台读取）</button></div>
+        <div id="accReviewBox"></div>
+        <div style="margin-top:10px"><button class="pb-btn" id="xhsRefresh">派单中控台读取本账号待读数据</button></div>
       </div>
       <div class="xhs-peer panel">
-        <div class="f-head" style="margin-bottom:8px"><h3>同类对标号 · 近期发布</h3><small>同城/同品类账号参考，学习标题与选题结构</small></div>
+        <div class="f-head" style="margin-bottom:8px"><h3>同类对标号 · 真实采集</h3><small>录入你真实关注的同城/同品类账号；未采集前显示"待真实采集"，不展示第三方拆解榜</small></div>
         <div id="xhsPeers"></div>
+        <div class="acc-peer-add">
+          <input id="accPeerName" type="text" placeholder="对标号昵称，如：潮州健身阿豪">
+          <input id="accPeerLink" type="text" placeholder="主页链接 / 小红书搜索词（选填）">
+          <button class="xbind-btn" id="accPeerAddBtn" type="button">添加对标号</button>
+        </div>
       </div>
     </section>
 
@@ -711,6 +769,19 @@
   </div>
 </div>
 
+<!-- 账号数据闭环通用弹层（发布登记 / 互动数据录入 / 对标笔记录入） -->
+<div class="acc-modal" id="accModal" style="display:none">
+  <div class="acc-modal-mask" data-acc-modal-close></div>
+  <div class="acc-modal-card" role="dialog" aria-modal="true">
+    <div class="acc-modal-head"><span id="accModalTitle">录入</span><button class="acc-pop-x" id="accModalX" type="button" data-acc-modal-close>×</button></div>
+    <div class="acc-modal-body" id="accModalBody"></div>
+    <div class="acc-modal-foot">
+      <button class="copy-btn" id="accModalCancel" type="button" data-acc-modal-close style="background:var(--card2);color:var(--sub);">取消</button>
+      <button class="xbind-btn" id="accModalOk" type="button">确认保存</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ================= 基础 ================= */
 function $(id){ return document.getElementById(id); }
@@ -743,25 +814,12 @@ sideNav.innerHTML = NAV.map(function(n){
 
 /* ================= 账号矩阵（人设账号逻辑：一个账号 = 一个人设 = 一套内容方向） ================= */
 var CUR_ACC = '大学生创业号';
+/* 种子账号仅含人设；小红书绑定、发布记录、互动数据、对标号全部由用户真实录入/中控台回填，存于 localStorage(aiop_accdata)，页面启动时恢复 */
 var ACCOUNTS = [
-  {n:'大学生创业号', role:'毕业返乡 · 开店连载', stage:'起号期', persona:'毕业回潮州，不躺平，给老家年轻人开一家24h健身房', story:'开店连载：第1天选址 → 第7天装修 → 第30天开业 → 第60天凌晨探店 → 第90天会员故事', hook:'潮州地标 + 价格透明 + 女性友好 + 单次体验价', tone:'创业连载 · 真实记录', used:2, cap:5,
-    xhs:{id:'chao.zhou.24h', bound:true},
-    posts:[
-      {t:'在潮州，凌晨两点还能去的地方不多，这家算一个', type:'素人种草', date:'3天前', like:'4.6w', fav:'3.2w', cmt:'1.2k', ds:86, d1:'已读', d3:'已读', d7:'待读'},
-      {t:'潮州一日City Walk路线｜经典地标→夜宵→最后一站消食', type:'攻略帖', date:'1天前', like:'8.9k', fav:'6.4k', cmt:'312', ds:0, d1:'待读', d3:'待读', d7:'待读'}
-    ],
-    peers:[
-      {name:'潮州健身阿豪', link:'小红书搜索：潮州健身阿豪', notes:[{t:'潮州健身房测评第3期：谁才是真的24h', like:'1.8w', cmt:'642'},{t:'男生宿舍健身2个月对比，差别有多大', like:'9.2k', cmt:'380'}]},
-      {name:'潮州探店小分队', link:'小红书搜索：潮州探店小分队', notes:[{t:'潮州本地人私藏的5家深夜去处', like:'2.3w', cmt:'980'}]}
-    ]},
+  {n:'大学生创业号', role:'毕业返乡 · 开店连载', stage:'起号期', persona:'毕业回潮州，不躺平，给老家年轻人开一家24h健身房', story:'开店连载：第1天选址 → 第7天装修 → 第30天开业 → 第60天凌晨探店 → 第90天会员故事', hook:'潮州地标 + 价格透明 + 女性友好 + 单次体验价', tone:'创业连载 · 真实记录', used:0, cap:5,
+    xhs:{id:'', bound:false, url:''}},
   {n:'全职宝妈号', role:'重返职场 · 生活记录', stage:'起号期', persona:'全职妈妈带娃五年，重新出发：把运动和搞钱一起安排', story:'重新开始：第1天重建作息 → 第7天恢复训练 → 第30天第一个副业订单 → 第60天带娃健身日常 → 第90天收支复盘', hook:'时间管理 + 单次体验 + 情绪价值 + 副业搞钱', tone:'生活化 · 情绪共鸣', used:0, cap:3,
-    xhs:{id:'', bound:false},
-    posts:[
-      {t:'带娃五年，终于把自己捡起来重新练，顺便把时间管理掰回来', type:'素人种草', date:'5天前', like:'1.2w', fav:'9.8k', cmt:'486', ds:32, d1:'已读', d3:'已读', d7:'待读'}
-    ],
-    peers:[
-      {name:'潮州宝妈健身日常', link:'小红书搜索：潮州宝妈健身日常', notes:[{t:'全职妈妈的碎片时间训练法，一天20分钟', like:'6.7k', cmt:'214'}]}
-    ]}
+    xhs:{id:'', bound:false, url:''}}
 ];
 function curAcc(){
   return ACCOUNTS.filter(function(x){ return x.n===CUR_ACC; })[0] || ACCOUNTS[0];
@@ -795,6 +853,7 @@ function renderAcc(){
       if(CUR_ACC === el.getAttribute('data-acc')) return;
       CUR_ACC = el.getAttribute('data-acc');
       renderAcc(); loadSetFields(); applyPersona();
+      if(typeof renderXhs==='function') renderXhs();
       addMsg('boss','','<b>已切换到账号：</b>「'+CUR_ACC+'」（口吻：'+accTone()+'）。人设卡与到店打法模板已同步为该账号设定。');
     });
   });
@@ -861,6 +920,7 @@ function renderAccPop(){
       if(CUR_ACC === el.getAttribute('data-acc-pop')){ $('accPop').classList.remove('show'); return; }
       CUR_ACC = el.getAttribute('data-acc-pop');
       renderAcc(); renderAccPop(); loadSetFields(); applyPersona();
+      if(typeof renderXhs==='function') renderXhs();
       $('accPop').classList.remove('show');
       addMsg('boss','','<b>已切换到账号：</b>「'+CUR_ACC+'」（口吻：'+accTone()+'）。人设卡与到店打法模板已同步。');
     });
@@ -987,6 +1047,7 @@ function showPage(id){
   document.querySelectorAll('.s-item').forEach(function(s){ s.classList.toggle('on', s.getAttribute('data-page')===id); });
   if(id==='factory' && typeof renderDrafts==='function'){ renderDrafts(); }
   if(id==='notes' && typeof paintLive==='function'){ paintLive(); }
+  if(id==='xhs' && typeof renderXhs==='function'){ renderXhs(); }
 }
 sideNav.addEventListener('click', function(e){
   var it = e.target.closest('.s-item'); if(!it) return;
@@ -2612,95 +2673,6 @@ var HOT_FALLBACK = {
 };
 /* 线上环境（GitHub Pages 等 https）加载 data/hot.json 覆盖榜单；本地 file:// 打开时直接使用内嵌数据 */
 var HOT = HOT_FALLBACK;
-var HOT_META = {updatedAt:0, mode:'内嵌快照', source:'HOT_FALLBACK'};
-/* ===== 实时数据通道：GitHub raw 直读（秒级更新，绕过 Pages 重建）+ 同源兜底 ===== */
-function rawURL(name){
-  var p = (typeof location!=='undefined' && location && location.protocol) || '';
-  if(p === 'file:' || p === '') return null;
-  return 'https://raw.githubusercontent.com/zataroval/aiguide-console/live-data/' + name + '?v=' + Date.now();
-}
-function loadJSON(name, cb){
-  var u = rawURL(name);
-  if(!u){ return; }
-  fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb)
-    .catch(function(){
-      fetch(name,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb).catch(function(){});
-    });
-}
-function jsdURL(name){
-  return 'https://cdn.jsdelivr.net/gh/zataroval/aiguide-console@live-data/' + name + '?v=' + Date.now();
-}
-function loadJSON2(name, cb, freshKey, tries){
-  var p = (typeof location!=='undefined' && location && location.protocol) || '';
-  if(p === 'file:' || p === ''){ return; }
-  var outs = [];
-  function feed(list, key){
-    if(!list) return;
-    var cur = (typeof key==='function') ? key(list) : (list && (list._meta ? list._meta.updatedAt : ''));
-    var prev = (typeof key==='function') ? null : null;
-    outs.push({k:cur, v:list});
-    if(outs.length===2){
-      var best = outs[0];
-      if(outs[1].k > best.k){ best = outs[1]; }
-      cb(best.v);
-    }
-  }
-  var u1 = rawURL(name), u2 = jsdURL(name);
-  var n = 0;
-  function done(){ n++; if(n===2){ if(outs.length===1){ cb(outs[0].v); } else if(outs.length===0 && (tries||0)<4){ setTimeout(function(){ loadJSON2(name, cb, freshKey, (tries||0)+1); }, 3000); } } }
-  if(u1){ fetch(u1,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done); } else { done(); }
-  fetch(u2,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done);
-}
-function fmtFresh(ts){
-  if(!ts) return '未知';
-  var diff = (Date.now() - ts) / 60000;
-  if(diff < 1) return '刚刚';
-  if(diff < 60) return Math.round(diff) + ' 分钟前';
-  return Math.round(diff/60) + ' 小时前';
-}
-function paintLive(mode){
-  var dot = $('npLiveDot'), tx = $('npLiveTxt');
-  if(!dot || !tx) return;
-  var ts = HOT_META && HOT_META.updatedAt;
-  if(mode==='fresh' && ts){
-    dot.style.background = '#4ADE80';
-    tx.innerHTML = '数据源：线上实时管道 · 最后采集 <b>' + fmtFresh(ts) + '</b>（' + new Date(ts).toLocaleString('zh-CN',{hour12:false}) + '）';
-  } else if(mode==='fresh'){
-    dot.style.background = '#4ADE80';
-    tx.innerHTML = '数据源：线上 hot.json · 无时间戳（点"刷新数据"确认）';
-  } else if(ts){
-    dot.style.background = '#4ADE80';
-    tx.innerHTML = '数据源：线上实时管道 · 最后采集 <b>' + fmtFresh(ts) + '</b>（' + new Date(ts).toLocaleString('zh-CN',{hour12:false}) + '）';
-  } else {
-    dot.style.background = '#FBBF24';
-    tx.innerHTML = '数据源：内嵌快照 · ' + (HOT_META && HOT_META.mode ? HOT_META.mode : '未连接实时管道') + ' · 点"立即采集"复制指令接入实时';
-  }
-}
-function refreshData(){
-  var p = (typeof location!=='undefined' && location && location.protocol) || '';
-  if(p === 'file:' || p === ''){ toast('本地模式数据来自内嵌快照；实时管道需在线上链接打开'); return; }
-  toast('正在拉取最新数据…');
-  loadJSON2('hot.json', function(d){
-    if(d && typeof d==='object'){
-      if(d._meta){ HOT_META = d._meta; delete d._meta; }
-      if(Object.keys(d).length){
-        HOT = d;
-        try{ renderCityTabs(); renderIndTabs(); renderAll((typeof currentCity!=='undefined'&&currentCity?currentCity:'潮州')+'·'+(typeof currentKey!=='undefined'&&currentKey?currentKey:'健身')); }catch(e){}
-        paintLive('fresh'); toast('数据已刷新');
-      } else { paintLive('snap'); }
-    } else { paintLive('snap'); }
-  });
-  setTimeout(function(){ if($('npLiveDot') && $('npLiveDot').style.background !== 'rgb(74, 222, 128)'){ } }, 1);
-}
-function copyCollect(){
-  var c = (typeof currentCity!=='undefined' && currentCity ? currentCity : '潮州') + ' ' + (typeof currentKey!=='undefined' && currentKey ? currentKey : '健身');
-  var txt = '采集 ' + c + ' 行业爆款';
-  var ta = document.createElement('textarea');
-  ta.value = txt; document.body.appendChild(ta); ta.select();
-  try{ document.execCommand('copy'); toast('采集指令已复制：「'+txt+'」→ 粘贴到对话区即触发实时采集'); }
-  catch(e){ toast('复制失败，请手动复制：「'+txt+'」'); }
-  ta.remove();
-}
 (function(){
   var p = (typeof location!=='undefined' && location && location.protocol) || '';
   if(p === 'file:' || p === ''){ paintLive('snap'); return; } /* 本地打开：内嵌数据已就绪，不发请求 */
@@ -2715,10 +2687,15 @@ function copyCollect(){
 })();
 
 function parseNum(s){
-  if(!s) return 0;
-  var m = s.match(/^([\d.]+)\s*([wW]?)\+?$/);
+  if(s==null) return 0;
+  var str = String(s).trim().replace(/,/g,'');
+  if(!str || str==='—' || str==='-') return 0;
+  var m = str.match(/^([\d.]+)\s*(万|w|W|k|K|千)?\+?$/);
   if(!m) return 0;
-  return m[2] ? parseFloat(m[1])*10000 : parseFloat(m[1]);
+  var v = parseFloat(m[1]);
+  if(isNaN(v)) return 0;
+  if(m[2]){ v *= (m[2]==='k'||m[2]==='K'||m[2]==='千') ? 1000 : 10000; }
+  return v;
 }
 function heat(n){ return Math.round(parseNum(n.like)*0.5 + parseNum(n.fav)*0.3 + parseNum(n.cmt)*0.2); }
 function sortHeat(a,b){ return heat(b)-heat(a); }
@@ -2729,16 +2706,37 @@ function itemHTML(n, i){
     '<span class="np-title">'+n.t+'</span>'+
     '<span class="np-meta">赞'+n.like+' · 评'+n.cmt+' · 热'+heat(n)+'</span></div>';
 }
+/* 正文真实性判定：占位引导语 / 提取失败标注 / 空值 均不算真实正文 */
+function isRealBody(b){
+  if(!b || typeof b!=='string') return false;
+  var s=b.trim();
+  if(!s) return false;
+  if(s.indexOf('（实时笔记·页面可见正文需点开笔记阅读）')===0) return false;
+  if(s.indexOf('提取失败')===0) return false;
+  return true;
+}
+function isFailBody(b){ return typeof b==='string' && b.trim().indexOf('提取失败')===0; }
+/* 笔记卡正文块：真实正文展示（超长截断+展开收起）；无正文显示"待提取正文" */
+function noteBodyHTML(n, i){
+  if(isRealBody(n.body)){
+    var long = n.body.length > 120;
+    return '<div class="np-full has-body">'+
+      '<div class="np-body-txt collapsed">'+esc(n.body)+'</div>'+
+      (long?'<button type="button" class="np-more" data-more="'+i+'">展开全文 ▾</button>':'')+
+      '</div>';
+  }
+  return '<div class="np-full np-empty">'+(isFailBody(n.body)?esc(n.body.trim()):'待提取正文（提取器补采后自动展示完整正文）')+'</div>';
+}
 function bigItemHTML(n, i){
   var isDemo = (n.link||'').indexOf('demo') > -1;
   var cover = n.cover ? '<img src="'+n.cover+'" alt="封面" loading="lazy" referrerpolicy="no-referrer">' : '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px">无封面</div>';
   return '<div class="np-item np-card'+(i===pickedIdx?' sel':'')+'" data-idx="'+i+'" title="'+n.t+'">'+
     '<div class="np-cover">'+cover+'<span class="np-rank">'+(i+1)+'</span></div>'+
     '<div class="np-card-bd">'+
-      '<div class="np-title">'+n.t+'</div>'+
+      '<div class="np-title">'+esc(n.t)+'</div>'+
       '<div class="np-meta">赞'+n.like+' · 藏'+n.fav+' · 评'+n.cmt+' · 热'+heat(n)+'</div>'+
       '<div class="np-src">来源：'+n.src+'</div>'+
-      '<div class="np-full">'+n.body+'</div>'+
+      noteBodyHTML(n, i)+
       '<span class="np-act">'+
         '<button class="np-copy" data-copy="'+i+'">复制链接'+(isDemo?'（示例）':'')+'</button>'+
         '<button class="np-learn" data-learn="'+i+'">学习模仿</button>'+
@@ -2780,32 +2778,303 @@ function bindActs(box, list){
       if(n) learnNote(n);
     });
   });
+  /* 正文展开/收起 */
+  box.querySelectorAll('[data-more]').forEach(function(el){
+    var txt = el.previousElementSibling;
+    el.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(!txt) return;
+      var collapsed = txt.classList.toggle('collapsed');
+      el.textContent = collapsed ? '展开全文 ▾' : '收起 ▴';
+    });
+  });
 }
-/* 学习模仿：提交爆款笔记 → 拆解结构 → 按当前账号人设仿写本地版 */
+/* 标题句式识别（基于原标题真实文字） */
+function titlePatternOf(t){
+  var s=t||'';
+  if(/[？?]$/.test(s)||/怎么|哪家|求推荐|靠谱/.test(s)) return '提问/求助句式（评论区天然承接回答，互动率高）';
+  if(/\d/.test(s)) return '数字锚点句式（数字=具体感，降低决策成本）';
+  if(/终于|居然|没想到|藏|私藏|秘密|唯一|首家|第一|终于也有/.test(s)) return '稀缺/发现感句式（制造"本地人私藏/首家"心智）';
+  if(/[!！]|🥹|😭|❤️|🔥|✨|💪/.test(s)) return '情绪感叹句式（情绪直给拉点击）';
+  return '陈述+利益点句式（直给品类/场景价值）';
+}
+/* 学习模仿：必须基于真实正文拆解（标题句式/开头钩子/段落结构/话题标签）→ 按当前账号人设出仿写派单；无真实正文明确中止，禁止固定文案冒充 */
 function learnNote(n){
   addMsg('user','','学习模仿：《'+n.t+'》');
+  if(!isRealBody(n.body)){
+    setTimeout(function(){
+      addMsg('boss','','<b>【学习模仿·中止】</b>该笔记正文待提取，先提取再学习模仿。当前卡片仅为占位正文，无法基于真实内容拆解标题句式/开头钩子/段落结构/话题标签，因此不派单、不产出仿写稿。可：①点"复制链接"把笔记链接发我提取正文 ②等提取器补采正文后再点本条。');
+      setThread(1,'wait','等待正文提取','无真实正文，暂不派单');
+    }, 500);
+    return;
+  }
+  var body = n.body.trim();
+  var paras = body.split(/\n+/).filter(function(s){return s.trim();});
+  var hookRaw = (paras[0]||'').trim();
+  var hook = hookRaw.length>42 ? hookRaw.slice(0,42)+'…' : hookRaw;
+  var tags = (body.match(/#([^\s#，。！？、,!.?~～]+)/g)||[]);
+  var tagStr = tags.length ? tags.slice(0,6).join(' ') : '（原文未带话题标签，仿写时按同品类补商圈词+品类词）';
   setTimeout(function(){
-    addMsg('boss','','<b>【学习模仿】</b>已锁定爆款《'+n.t+'》（赞'+n.like+' · 评'+n.cmt+'），派单 T2 提取全文并拆解结构（标题句式 / 人群钩子 / 话题组合）。');
-    setThread(1,'working','学习《'+n.t.slice(0,14)+'…》','结构拆解中');
+    addMsg('boss','','<b>【学习模仿】</b>已锁定爆款《'+n.t+'》（赞'+n.like+' · 藏'+n.fav+' · 评'+n.cmt+'），正文'+body.length+'字已入拆解，派单 T2 按账号「'+CUR_ACC+'」人设本地化仿写。');
+    setThread(1,'working','拆解《'+n.t.slice(0,14)+'…》','真实正文结构拆解中');
   }, 500);
   setTimeout(function(){
-    addMsg('thread','T2','#38BDF8','<b>结构拆解完成：</b>①标题用"悬念+数字/地标"句式 ②钩子打在"价格透明+女性友好+单次体验" ③话题带商圈词与品类词。已按账号「'+CUR_ACC+'」人设仿写本地版，回填图文工厂。');
-    setThread(1,'done','仿写完成','《潮州版·仿写》已回填');
-    addRecent('学习模仿《'+n.t.slice(0,10)+'…》', '仿写已出稿');
+    addMsg('thread','T2','#38BDF8','<b>结构拆解（基于原文真实正文）：</b><br>①标题句式：《'+esc(n.t)+'》——'+titlePatternOf(n.t)+'<br>②开头钩子（原文首句）：「'+esc(hook)+'」<br>③段落结构：'+paras.length+'段 · 正文'+body.length+'字 · 话题'+tags.length+'个<br>④话题标签：'+esc(tagStr)+'<br>已按账号「'+CUR_ACC+'」人设生成仿写派单（引用上述真实要点），回填图文工厂，成稿由中控台基于原文扩写。');
+    setThread(1,'done','仿写派单完成','按「'+CUR_ACC+'」本地化');
+    addRecent('学习模仿《'+n.t.slice(0,10)+'…》', '真实正文拆解+仿写派单');
     var dyn = $('notesDyn');
     if(dyn){
-      var t2 = '在潮州，凌晨两点还能去的地方不多，这家算一个';
-      var pubOn2 = pubState(CUR_ACC, t2);
-      dyn.innerHTML = '<div class="note"><div class="note-head">动态成稿 · 学习模仿《'+n.t.slice(0,12)+'…》 <span>结构仿写 · 按「'+CUR_ACC+'」人设本地化 · 最新</span></div><div class="note-body"><div class="note-txt"><div class="note-title">《'+t2+'》</div><div class="stage-tip">起号期策略已适配：真实感优先 · 单篇埋词3-5个 · 发布后1/3/7天读数据复盘</div><div class="note-copy">（演示）已按原爆款结构仿写并本地化：标题悬念+地标、正文钩子（价格透明/女性友好/单次体验）、话题埋商圈词与关键词。可直接复制发布。</div><div class="note-acts"><button class="copy-btn" id="copyDyn">复制成稿</button><button class="pub-btn'+(pubOn2?' pub-done':'')+'" id="pubDyn" data-pub="'+CUR_ACC+'" data-title="'+t2+'">'+(pubOn2?'✓ 已发布 · 点击取消':'标记已发布')+'</button></div></div></div></div>';
-      $('copyDyn').addEventListener('click', function(){ copyText('《'+t2+'》\n（演示仿写稿：结构仿原爆款、本地化埋词，可直接复制发布）'); toast('已复制成稿，可粘贴到小红书发布'); });
+      var plain = [
+        '【学习模仿派单】仿《'+n.t+'》（赞'+n.like+' · 藏'+n.fav+' · 评'+n.cmt+'） · 账号「'+CUR_ACC+'」',
+        '一、原文拆解（真实正文）',
+        '1. 标题句式：'+titlePatternOf(n.t),
+        '2. 开头钩子：「'+hookRaw+'」',
+        '3. 段落结构：'+paras.length+'段 / 正文'+body.length+'字 / 话题'+tags.length+'个',
+        '4. 话题标签：'+(tags.join(' ')||'原文无标签，仿写补商圈词+品类词'),
+        '二、本地化仿写方向',
+        '1. 标题：保留原句式（'+titlePatternOf(n.t)+'），把原地标/品类替换为本地目标商圈词',
+        '2. 开头：沿用原钩子的情绪/提问方式，换成自己的真实体验第一句，不照抄',
+        '3. 结构：沿用原文 '+paras.length+' 段顺序（钩子→体验→清单/地址→话题）',
+        '4. 埋词：本地商圈词3-5个 + 品类关键词；话题沿用原文同品类标签结构',
+        '三、纪律：成稿必须基于原文要点扩写，禁止脱离原文凭空编造；发布后1/3/7天读数据复盘。',
+        '原文链接：'+(n.link||'无')
+      ].join('\n');
+      var pubOn2 = pubState(CUR_ACC, n.t);
+      dyn.innerHTML = '<div class="note"><div class="note-head">仿写派单 · 学习模仿《'+n.t.slice(0,12)+'…》 <span>真实正文拆解 · 按「'+CUR_ACC+'」人设本地化 · 最新</span></div><div class="note-body"><div class="note-txt"><div class="note-title">仿写派单 · 仿《'+esc(n.t.slice(0,20))+(n.t.length>20?'…':'')+'》</div><div class="stage-tip">起号期策略：真实感优先 · 单篇埋词3-5个 · 发布后1/3/7天读数据复盘 · 成稿由中控台基于原文扩写</div><div class="note-copy" style="white-space:pre-wrap;font-size:12px;color:var(--sub);line-height:1.8">'+esc(plain)+'</div><div class="note-acts"><button class="copy-btn" id="copyDyn">复制派单稿</button><button class="pub-btn'+(pubOn2?' pub-done':'')+'" id="pubDyn" data-pub="'+CUR_ACC+'" data-title="'+esc(n.t)+'">'+(pubOn2?'✓ 已发布 · 点击取消':'标记已发布')+'</button></div></div></div></div>';
+      $('copyDyn').addEventListener('click', function(){ copyText(plain); toast('已复制仿写派单，可粘贴到中控台扩写成稿'); });
       var pd2 = $('pubDyn'); if(pd2){ pd2.addEventListener('click', function(){ togglePub(pd2); }); }
     }
     flowMark(6,'done');
   }, 1800);
   setTimeout(function(){
-    addMsg('boss','','【下一步】仿写稿已就绪。可继续：① 再选一条对比模仿 ② 生成评论区钩子话术（T5）③ 排期发布（T4）。直接说需求。');
+    addMsg('boss','','【下一步】拆解+仿写派单已就绪。可继续：① 把派单发我扩写成稿 ② 再选一条对比模仿 ③ 生成评论区钩子话术（T5）④ 排期发布（T4）。直接说需求。');
   }, 2800);
 }
+var HOT_META = {updatedAt:0, mode:'内嵌快照', source:'HOT_FALLBACK'};
+/* ===== 实时数据通道：GitHub raw 直读（秒级更新，绕过 Pages 重建）+ 同源兜底 ===== */
+function rawURL(name){
+  var p = (typeof location!=='undefined' && location && location.protocol) || '';
+  if(p === 'file:' || p === '') return null;
+  return 'https://raw.githubusercontent.com/zataroval/aiguide-console/live-data/' + name + '?v=' + Date.now();
+}
+function loadJSON(name, cb){
+  var u = rawURL(name);
+  if(!u){ return; }
+  fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb)
+    .catch(function(){
+      fetch(name,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(cb).catch(function(){});
+    });
+}
+function jsdURL(name){
+  return 'https://cdn.jsdelivr.net/gh/zataroval/aiguide-console@live-data/' + name + '?v=' + Date.now();
+}
+/* ===== 窗口D：加载失败兜底（离线缓存 + 明确错误态 + 重试），仅服务 loadJSON2 通道 ===== */
+var NET_CACHE_PREFIX = 'aiguide_console_cache_';
+function netCacheSave(name, data){
+  try{ localStorage.setItem(NET_CACHE_PREFIX + name, JSON.stringify({savedAt:Date.now(), data:data})); }catch(e){}
+}
+function netCacheLoad(name){
+  try{
+    var raw = localStorage.getItem(NET_CACHE_PREFIX + name);
+    if(!raw) return null;
+    var obj = JSON.parse(raw);
+    return (obj && obj.data) ? obj : null;
+  }catch(e){ return null; }
+}
+function netBannerHide(){
+  var bar = document.getElementById('netFallbackBar');
+  if(bar) bar.remove();
+}
+function netBannerShow(bn, kind, savedAt, retryFn){
+  if(bn !== 'hot.json') return; /* 仅榜单页展示兜底条；drafts 等其它资源保持静默 */
+  var host = document.getElementById('npLive');
+  if(!host) return;
+  netBannerHide();
+  var bar = document.createElement('div');
+  bar.id = 'netFallbackBar';
+  if(kind === 'cache'){
+    var t = savedAt ? new Date(savedAt).toLocaleString('zh-CN',{hour12:false}) : '未知时间';
+    bar.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.6;color:#FBBF24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35)';
+    bar.innerHTML = '<span style="flex:none">●</span><span style="flex:1;min-width:160px">离线缓存 · 网络不可达，展示上次成功数据（' + t + '）；网络恢复后点"刷新数据"重新拉取。</span>';
+  } else {
+    bar.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.6;color:#F87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.35)';
+    var txt = document.createElement('span');
+    txt.style.cssText = 'flex:1;min-width:160px';
+    txt.textContent = '实时数据加载失败（双 CDN 均不可达，已重试4次）。当前展示内嵌快照，可点重试或稍后再试。';
+    var btn = document.createElement('button');
+    btn.textContent = '重试拉取';
+    btn.style.cssText = 'flex:none;background:#F87171;border:none;border-radius:7px;padding:6px 14px;color:#fff;font-weight:700;font-size:12px;cursor:pointer';
+    btn.addEventListener('click', function(){ netBannerHide(); if(retryFn) retryFn(); });
+    bar.appendChild(txt); bar.appendChild(btn);
+  }
+  host.parentNode.insertBefore(bar, host.nextSibling);
+}
+function netFailFallback(name, cb, freshKey){
+  var cached = netCacheLoad(name);
+  if(cached){
+    cb(cached.data);
+    netBannerShow(name, 'cache', cached.savedAt, null);
+  } else {
+    netBannerShow(name, 'error', null, function(){ loadJSON2(name, cb, freshKey, 0); });
+  }
+}
+function loadJSON2(name, cb, freshKey, tries){
+  var p = (typeof location!=='undefined' && location && location.protocol) || '';
+  if(p === 'file:' || p === ''){ return; }
+  var outs = [];
+  function feed(list, key){
+    if(!list) return;
+    var cur = (typeof key==='function') ? key(list) : (list && (list._meta ? list._meta.updatedAt : ''));
+    outs.push({k:cur, v:list});
+    if(outs.length===2){
+      var best = outs[0];
+      if(outs[1].k > best.k){ best = outs[1]; }
+      netCacheSave(name, best.v); netBannerHide();
+      cb(best.v);
+    }
+  }
+  var u1 = rawURL(name), u2 = jsdURL(name);
+  var n = 0;
+  function done(){ n++; if(n===2){
+    if(outs.length===1){ netCacheSave(name, outs[0].v); netBannerHide(); cb(outs[0].v); }
+    else if(outs.length===0){
+      if((tries||0)<4){ setTimeout(function(){ loadJSON2(name, cb, freshKey, (tries||0)+1); }, 3000); }
+      else { netFailFallback(name, cb, freshKey); }
+    }
+  } }
+  if(u1){ fetch(u1,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done); } else { done(); }
+  fetch(u2,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){ feed(l, freshKey); }).catch(function(){}).then(done);
+}
+/* ===== 窗口A：数据新鲜度补偿（过期警示 + 手动补采入口 + 定时任务状态提示）===== */
+function fmtFresh(ts){
+  if(!ts) return '未知';
+  var diff = (Date.now() - ts) / 60000;
+  if(diff < 1) return '刚刚';
+  if(diff < 60) return Math.round(diff) + ' 分钟前';
+  if(diff < 1440) return Math.round(diff/60) + ' 小时前';
+  return Math.round(diff/1440) + ' 天前';
+}
+/* 超过24小时即判定过期 */
+function cmpIsStale(ts){
+  if(!ts) return true;
+  return (Date.now() - ts) > 24*3600*1000;
+}
+/* 动态注入过期警示条 + 手动补采行（cmp- 前缀），不改动静态标记 */
+function cmpEnsureUI(){
+  var bar = $('npLive');
+  if(!bar) return;
+  if(!$('cmpExpireWarn')){
+    var warn = document.createElement('div');
+    warn.id = 'cmpExpireWarn';
+    warn.style.cssText = 'display:none;width:100%;align-items:flex-start;gap:8px;background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12px;color:#fecaca;line-height:1.6';
+    warn.innerHTML = '<span style="color:#ef4444;font-weight:700;flex:none">● 数据已过期</span><span id="cmpExpireTxt" style="flex:1;min-width:0"></span>';
+    bar.appendChild(warn);
+  }
+  if(!$('cmpBackupRow')){
+    var row = document.createElement('div');
+    row.id = 'cmpBackupRow';
+    row.style.cssText = 'display:none;width:100%;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px';
+    row.innerHTML = '<button id="cmpCollectBtn" onclick="copyCollect(true)" style="background:#ef4444;border:none;border-radius:7px;padding:8px 14px;font-size:13px;color:#fff;cursor:pointer;font-weight:600">立即补采</button>'
+      + '<span style="font-size:11px;color:var(--sub);line-height:1.6;flex:1;min-width:180px">点击复制采集指令 → 粘贴到对话区发送即可回填今日实时爆款。定时采集（每天 9:00 / 21:00）失败或设备离线时，由此入口手动补偿。</span>'
+      + '<span id="cmpCronStatus" style="font-size:11px;color:var(--sub)">定时采集：09:00 / 21:00 · 失败可在任务中心查看运行记录</span>';
+    bar.appendChild(row);
+  }
+}
+function cmpSetStale(on, reason){
+  cmpEnsureUI();
+  var warn = $('cmpExpireWarn'), row = $('cmpBackupRow'), txt = $('cmpExpireTxt');
+  if(!on){
+    if(warn) warn.style.display = 'none';
+    if(row) row.style.display = 'none';
+    return;
+  }
+  if(warn){
+    warn.style.display = 'flex';
+    if(txt) txt.textContent = reason || '最后采集超过24小时，榜单可能不是今日实时，请立即补采。';
+  }
+  if(row) row.style.display = 'flex';
+}
+function paintLive(mode){
+  var dot = $('npLiveDot'), tx = $('npLiveTxt');
+  if(!dot || !tx) return;
+  var ts = HOT_META && HOT_META.updatedAt;
+  var stale = cmpIsStale(ts);
+  if(mode==='fresh' && ts && !stale){
+    dot.style.background = '#4ADE80';
+    tx.innerHTML = '数据源：线上实时管道 · 最后采集 <b>' + fmtFresh(ts) + '</b>（' + new Date(ts).toLocaleString('zh-CN',{hour12:false}) + '）';
+    cmpSetStale(false);
+  } else if(mode==='fresh' && ts){
+    dot.style.background = '#ef4444';
+    tx.innerHTML = '数据源：线上管道 · <b style="color:#ef4444">数据已过期</b>，最后采集 ' + fmtFresh(ts) + '（' + new Date(ts).toLocaleString('zh-CN',{hour12:false}) + '），超过24小时';
+    cmpSetStale(true, '最后采集 ' + new Date(ts).toLocaleString('zh-CN',{hour12:false}) + '，已超过24小时，榜单可能不是今日实时。');
+  } else if(mode==='fresh'){
+    dot.style.background = '#FBBF24';
+    tx.innerHTML = '数据源：线上 hot.json · 无时间戳（点"刷新数据"确认）';
+    cmpSetStale(true, '数据缺少采集时间戳，无法确认新鲜度。');
+  } else if(ts && !stale){
+    dot.style.background = '#4ADE80';
+    tx.innerHTML = '数据源：线上实时管道 · 最后采集 <b>' + fmtFresh(ts) + '</b>（' + new Date(ts).toLocaleString('zh-CN',{hour12:false}) + '）';
+    cmpSetStale(false);
+  } else if(ts){
+    dot.style.background = '#ef4444';
+    tx.innerHTML = '数据源：线上管道 · <b style="color:#ef4444">数据已过期</b>，最后采集 ' + fmtFresh(ts) + '，超过24小时';
+    cmpSetStale(true, '最后采集 ' + fmtFresh(ts) + '，已超过24小时。');
+  } else {
+    dot.style.background = '#FBBF24';
+    tx.innerHTML = '数据源：内嵌快照' + (HOT_META && HOT_META.mode && HOT_META.mode!=='内嵌快照' ? ' · ' + HOT_META.mode : '') + ' · 点"立即补采"复制指令接入实时';
+    cmpSetStale(true, '当前为内嵌快照，非实时数据。');
+  }
+}
+function refreshData(){
+  var p = (typeof location!=='undefined' && location && location.protocol) || '';
+  if(p === 'file:' || p === ''){
+    toast('本地模式数据来自内嵌快照；实时管道需在线上链接打开');
+    cmpSetStale(true, '本地 file:// 无法连接线上管道，请在线上链接打开，或点"立即补采"手动回填。');
+    return;
+  }
+  toast('正在拉取最新数据…');
+  var got = false;
+  var failTimer = setTimeout(function(){
+    if(!got){ cmpSetStale(true, '实时管道暂无响应（网络/CDN故障或采集未完成），可点"立即补采"手动回填。'); }
+  }, 8000);
+  loadJSON2('hot.json', function(d){
+    got = true; clearTimeout(failTimer);
+    if(d && typeof d==='object'){
+      if(d._meta){ HOT_META = d._meta; delete d._meta; }
+      if(Object.keys(d).length){
+        HOT = d;
+        try{ renderCityTabs(); renderIndTabs(); renderAll((typeof currentCity!=='undefined'&&currentCity?currentCity:'潮州')+'·'+(typeof currentKey!=='undefined'&&currentKey?currentKey:'健身')); }catch(e){}
+        paintLive('fresh'); toast('数据已刷新');
+      } else { paintLive('snap'); }
+    } else { paintLive('snap'); }
+  });
+}
+function copyCollect(force){
+  var c = (typeof currentCity!=='undefined' && currentCity ? currentCity : '潮州') + ' ' + (typeof currentKey!=='undefined' && currentKey ? currentKey : '健身');
+  var stale = cmpIsStale(HOT_META && HOT_META.updatedAt);
+  var txt = (stale ? '【数据过期补采】' : '') + '采集 ' + c + ' 行业爆款'
+    + (stale ? '：要求今日实时、每组6条、赞数为真实纯数字，写回后推送 live-data 并刷新页面' : '');
+  var ta = document.createElement('textarea');
+  ta.value = txt; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('采集指令已复制：「'+txt+'」→ 粘贴到对话区即触发实时采集'); }
+  catch(e){ toast('复制失败，请手动复制：「'+txt+'」'); }
+  ta.remove();
+}
+(function(){
+  var p = (typeof location!=='undefined' && location && location.protocol) || '';
+  if(p === 'file:' || p === ''){ paintLive('snap'); return; }
+  try{
+    fetch('hot.json', {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(d){
+        if(d && typeof d==='object' && Object.keys(d).length){
+          if(d._meta){ HOT_META = d._meta; delete d._meta; }
+          HOT = d;
+          try{ renderCityTabs(); renderIndTabs(); renderAll((typeof currentCity!=='undefined'&&currentCity?currentCity:'潮州')+'·'+(typeof currentKey!=='undefined'&&currentKey?currentKey:'健身')); }catch(e){}
+          paintLive('fresh');
+        } else { paintLive('snap'); }
+      }).catch(function(){ paintLive('snap'); });
+  }catch(e){ paintLive('snap'); }
+})();
 function renderAll(key){
   if(!HOT[key] || !HOT[key].length){ HOT[key] = genIndNotes(key.indexOf('·')>-1 ? key.split('·')[1] : key, key.indexOf('·')>-1 ? key.split('·')[0] : ''); }
   var list = HOT[key].slice().sort(sortHeat);
@@ -3038,40 +3307,155 @@ function copyText(txt){
   try{ document.execCommand('copy'); toast('已复制，可直接粘贴发布'); }catch(e){ toast('复制失败，请手动选择复制'); }
   ta.remove();
 }
-/* ================= 已发布标记（localStorage 持久化 + 同步账号数据页） ================= */
+/* ================= 账号真实数据闭环：数据层（aiop_accdata / aiop_review）+ 通用弹层 ================= */
+/* 结构：aiop_accdata = { [账号名]: { xhs:{bound,id,url}, posts:{[标题]:{title,link,pubAt,pubAtTs,type,createdAt,metrics:{d1,d3,d7}}}, peers:[{name,link,notes:[{t,like,cmt,source,readAt}]}] } } */
+function accMap(){
+  var m = {};
+  try{ m = JSON.parse(localStorage.getItem('aiop_accdata')||'{}')||{}; }catch(e){ m = {}; }
+  return m;
+}
+function saveAccMap(m){ try{ localStorage.setItem('aiop_accdata', JSON.stringify(m)); }catch(e){} }
+function accRec(name){
+  var m = accMap();
+  if(!m[name]) m[name] = {xhs:{bound:false,id:'',url:''}, posts:{}, peers:[]};
+  var r = m[name];
+  r.xhs = r.xhs || {bound:false,id:'',url:''};
+  r.posts = r.posts || {};
+  r.peers = r.peers || [];
+  return {map:m, rec:r};
+}
+function hydrateAccXhs(){
+  var m = accMap();
+  ACCOUNTS.forEach(function(a){
+    var x = (m[a.n] && m[a.n].xhs) || {bound:false,id:'',url:''};
+    a.xhs = {bound:!!x.bound, id:x.id||'', url:x.url||''};
+  });
+}
+function nowLocalInput(){
+  var d = new Date(), p = function(n){ return String(n).padStart(2,'0'); };
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
+}
+function fmtDT(iso){
+  if(!iso) return '—';
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return iso;
+  var p = function(n){ return String(n).padStart(2,'0'); };
+  return (d.getMonth()+1)+'/'+d.getDate()+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+/* 解析互动数字：支持 1.2w / 3k / 4500 / 1.2万；空→null，非法→NaN */
+function parseCount(s){
+  if(s===null||s===undefined) return null;
+  s = String(s).trim().replace(/[,，\s]/g,'');
+  if(!s) return null;
+  var mt = s.match(/^(\d+(?:\.\d+)?)([wWkK万千]?)$/);
+  if(!mt) return NaN;
+  var v = parseFloat(mt[1]);
+  if(mt[2]==='w'||mt[2]==='W'||mt[2]==='万') v *= 10000;
+  else if(mt[2]==='k'||mt[2]==='K'||mt[2]==='千') v *= 1000;
+  return Math.round(v);
+}
+function fmtCount(n){
+  if(n===null||n===undefined||isNaN(n)) return '—';
+  if(n>=10000) return (Math.round(n/10000*100)/100).toFixed(n%10000===0?0:1)+'w';
+  if(n>=1000) return (Math.round(n/1000*100)/100).toFixed(n%1000===0?0:1)+'k';
+  return String(n);
+}
+/* 小红书号/主页链接格式校验与归一化 */
+function normXhsInput(v){
+  v = (v||'').trim();
+  if(!v) return {error:'请输入小红书号或主页链接'};
+  var url = '', id = v;
+  var mu = v.match(/https?:\/\/(?:www\.)?(?:xiaohongshu\.com\/user\/profile\/|xhslink\.com\/)[^\s]+/i);
+  if(mu){ url = mu[0]; id = url.split('/').pop().split('?')[0] || url; }
+  else if(/^@?[A-Za-z0-9._-]{3,30}$/.test(v.replace(/^@/,''))){ id = v.replace(/^@/,''); }
+  else if(v.indexOf('http')===0){ url = v; id = v; }
+  else { return {error:'格式无法识别：请输入小红书号（字母/数字/下划线，如 xhs_chao24h）或主页链接（xiaohongshu.com/user/profile/...）'}; }
+  return {id:id, url:url};
+}
+/* 通用弹层 */
+var accModalOkHandler = null;
+function accOpenModal(title, bodyHtml, okText, onOk){
+  $('accModalTitle').textContent = title;
+  $('accModalBody').innerHTML = bodyHtml;
+  $('accModalOk').textContent = okText || '确认保存';
+  accModalOkHandler = onOk;
+  $('accModal').style.display = 'block';
+}
+function accCloseModal(){
+  $('accModal').style.display = 'none';
+  $('accModalBody').innerHTML = '';
+  accModalOkHandler = null;
+}
+document.addEventListener('click', function(e){
+  if(e.target && e.target.hasAttribute && e.target.hasAttribute('data-acc-modal-close')) accCloseModal();
+});
+(function(){
+  var ok = $('accModalOk');
+  if(ok) ok.addEventListener('click', function(){ if(accModalOkHandler){ var r = accModalOkHandler(); if(r!==false) accCloseModal(); } });
+})();
+
+/* ================= 已发布标记（localStorage 持久化 + 登记真实链接/时间 + 同步账号数据页） ================= */
 function pubState(acc, title){
   try{ var s = JSON.parse(localStorage.getItem('aiop_pub')||'{}'); return (s[acc]||[]).indexOf(title)>-1; }catch(e){ return false; }
 }
-function togglePub(btn){
-  var acc = btn.getAttribute('data-pub'), title = btn.getAttribute('data-title');
-  var key = 'aiop_pub', store = {};
-  try{ store = JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){}
+function setPubFlag(acc, title, on){
+  var store = {};
+  try{ store = JSON.parse(localStorage.getItem('aiop_pub')||'{}')||{}; }catch(e){}
   var list = store[acc] || [];
   var i = list.indexOf(title);
-  var accObj = null;
-  ACCOUNTS.forEach(function(a){ if(a.n===acc) accObj = a; });
-  if(i>-1){
-    list.splice(i,1);
-    btn.textContent = '标记已发布'; btn.classList.remove('pub-done');
-    if(accObj && accObj.posts){ accObj.posts = accObj.posts.filter(function(p){ return p.t !== title; }); }
-    addMsg('boss','','已取消「《'+title+'》」的已发布标记，发布记录已移除。');
-  } else {
-    list.push(title);
-    btn.textContent = '✓ 已发布 · 点击取消'; btn.classList.add('pub-done');
-    if(accObj){
-      if(accObj.used < accObj.cap) accObj.used += 1;
-      accObj.posts = accObj.posts || [];
-      accObj.posts.unshift({t:title, type:'新稿', date:'刚刚', like:'—', fav:'—', cmt:'—', ds:0, d1:'待读', d3:'待读', d7:'待读', pub:true});
-      renderXhs();
-    }
-    renderAcc(); renderAccPop();
-    flowMark(8,'done');
-    addMsg('boss','','<b>已发布：</b>《'+title+'》计入「'+acc+'」今日 '+(accObj?accObj.used:'')+'/'+(accObj?accObj.cap:'')+' 篇，并同步到「账号数据」页发布记录。1/3/7天后可让 T6 复盘读取数据。');
-  }
+  if(on && i<0) list.push(title);
+  if(!on && i>-1) list.splice(i,1);
   store[acc] = list;
-  try{ localStorage.setItem(key, JSON.stringify(store)); }catch(e){}
-  toast(i>-1 ? '已取消发布标记' : '已标记发布');
+  try{ localStorage.setItem('aiop_pub', JSON.stringify(store)); }catch(e){}
 }
+function togglePub(btn){
+  var acc = btn.getAttribute('data-pub'), title = (btn.getAttribute('data-title')||'').trim();
+  if(!title || title==='待提取标题'){ toast('成稿尚未提取完成，不能标记发布'); return; }
+  if(pubState(acc, title)){
+    /* 取消发布：移除发布标记、发布记录与已读数据 */
+    setPubFlag(acc, title, false);
+    var rr = accRec(acc);
+    delete rr.rec.posts[title];
+    saveAccMap(rr.map);
+    var accObj = null;
+    ACCOUNTS.forEach(function(a){ if(a.n===acc) accObj = a; });
+    if(accObj && accObj.used>0) accObj.used -= 1;
+    btn.textContent = '标记已发布'; btn.classList.remove('pub-done');
+    renderXhs(); renderAcc(); renderAccPop();
+    addMsg('boss','','已取消「《'+title+'》」的已发布标记，发布记录与已读数据一并移除。');
+    toast('已取消发布标记');
+    return;
+  }
+  /* 登记发布：笔记链接 + 发布时间，写入结构化发布记录 */
+  var body =
+    '<div class="acc-fld"><label>笔记链接（小红书笔记页 http 链接，选填；便于中控台按链接读取互动）</label>'+
+    '<input id="accFLink" type="text" placeholder="https://www.xiaohongshu.com/explore/..."></div>'+
+    '<div class="acc-fld"><label>发布时间（以小红书笔记实际发布时间为准）</label>'+
+    '<input id="accFTime" type="datetime-local" value="'+nowLocalInput()+'"></div>'+
+    '<div class="acc-tip">登记后该笔记进入 1/3/7 天数据追踪槽；发布时间用于判断各档是否到达读取窗口。本记录为<b>本账号真实发布</b>，不接受伪造数据。</div>';
+  accOpenModal('登记发布 · 《'+title.slice(0,22)+(title.length>22?'…':'')+'》', body, '确认发布', function(){
+    var link = $('accFLink').value.trim();
+    var tv = $('accFTime').value;
+    if(!tv){ toast('请选择发布时间'); return false; }
+    var ts = new Date(tv).getTime();
+    if(isNaN(ts)){ toast('发布时间格式不正确'); return false; }
+    if(link && link.indexOf('http')!==0){ toast('链接需以 http 开头，或留空'); return false; }
+    setPubFlag(acc, title, true);
+    var rr = accRec(acc);
+    rr.rec.posts[title] = {title:title, link:link, pubAt:new Date(ts).toISOString(), pubAtTs:ts, type:'新稿', createdAt:Date.now(), metrics:{d1:null,d3:null,d7:null}};
+    saveAccMap(rr.map);
+    var accObj = null;
+    ACCOUNTS.forEach(function(a){ if(a.n===acc) accObj = a; });
+    if(accObj){ if(accObj.used < accObj.cap) accObj.used += 1; }
+    btn.textContent = '✓ 已发布 · 点击取消'; btn.classList.add('pub-done');
+    flowMark(8,'done');
+    if(typeof renderDrafts==='function') renderDrafts();
+    renderXhs(); renderAcc(); renderAccPop();
+    addMsg('boss','','<b>已登记发布：</b>《'+title+'》（账号「'+acc+'」，发布于 '+fmtDT(new Date(ts).toISOString())+'）。已进入 1/3/7 天追踪槽，到点后在「账号数据」页录入真实赞/藏/评，或派中控台以登录态检索回填。');
+    toast('已登记发布，进入1/3/7天追踪');
+  });
+}
+
 $('copyDemo').addEventListener('click', function(){
   copyText(DEMO_NOTE.title + '\n' + DEMO_NOTE.body);
 });
@@ -3082,12 +3466,10 @@ $('linkBtn').addEventListener('click', function(){
   if(!v){ toast('请先粘贴小红书笔记链接'); return; }
   if(v.indexOf('http')!==0){ toast('请粘贴完整的小红书笔记链接（http开头）'); return; }
   setPipe(1);
-  /* 写入请求队列（本地持久化，供对话端读取回填） */
   var reqs = [];
   try{ reqs = JSON.parse(localStorage.getItem('aiop_reqs')||'[]'); }catch(e){}
   reqs.unshift({link:v, at:Date.now(), acc:(typeof CUR_ACC!=='undefined'?CUR_ACC:'')});
   try{ localStorage.setItem('aiop_reqs', JSON.stringify(reqs)); }catch(e){}
-  /* 一键复制处理指令（去对话粘贴即触发真实提取） */
   var txt = '请处理这条小红书笔记：' + v + '。提取标题/正文/图片，去水印，按当前账号「'+(typeof CUR_ACC!=='undefined'?CUR_ACC:'')+'」人设改写并回填图文工厂成稿区。';
   var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
   var copied = false;
@@ -3260,87 +3642,381 @@ function safetyCheck(body){
   return hits.length ? {ok:false, msg:'提示 '+hits.length+' 项，建议修改后发布：'+hits.map(function(r){return r[0];}).join('、')} : {ok:true, msg:'通过：未检出红线词，可直接发布。'};
 }
 
-/* ================= 账号数据页（小红书绑定 · 发布数据 · 对标号） ================= */
-function renderXhs(){
-  var bl = $('xhsBindList'), pd = $('xhsPosts'), pp = $('xhsPeers');
-  if(!bl) return;
-  bl.innerHTML = ACCOUNTS.map(function(a){
-    return '<div class="xbind-row"><span class="xbind-name">'+a.n+'</span><span class="xbind-st '+(a.xhs.bound?'bound':'unbound')+'">'+(a.xhs.bound?'已绑定 @'+esc(a.xhs.id):'未绑定')+'</span>'+
-      '<input class="xbind-in" data-xbind="'+a.n+'" placeholder="小红书号/主页链接，如 xhs_chao24h"'+(a.xhs.bound?' value="'+esc(a.xhs.id)+'"':'')+'><button class="xbind-btn" data-xbind-btn="'+a.n+'">'+(a.xhs.bound?'更新绑定':'绑定')+'</button></div>';
+/* ================= 账号数据页（小红书绑定 · 1/3/7天真实互动 · 对标号 · 数据驱动复盘） ================= */
+function latestMetric(p){ return p.metrics && (p.metrics.d7 || p.metrics.d3 || p.metrics.d1); }
+function engOf(m){ if(!m) return 0; return (m.like||0)+(m.fav||0)+(m.cmt||0); }
+function titlePattern(t){
+  t = t || '';
+  if(/第\s*\d+\s*天|第[一二三四五六七八九十百]+天/.test(t)) return '连载"第N天"纪实句式';
+  if(/凌晨|深夜|半夜|24h|24小时|晚上\d|夜场/.test(t)) return '具体时间悬念句式（凌晨/深夜锚点）';
+  if(/[?？]/.test(t)) return '提问悬念句式';
+  if(/对比|差别|真相|为什么|居然|没想到|后悔/.test(t)) return '反差/揭秘句式';
+  if(/路线|合集|私藏|\d+\s*家|\d+\s*个|TOP|清单|攻略/.test(t)) return '清单攻略句式（数字+合集）';
+  return '直述纪实句式（无明显钩子，建议加数字或悬念）';
+}
+function slotOfHour(h){ return h>=6&&h<12?'早场 6–12点':h>=12&&h<18?'午场 12–18点':h>=18&&h<23?'晚场 18–23点':'深夜场 23–6点'; }
+var SLOT_META = {d1:{label:'1天', due:24}, d3:{label:'3天', due:72}, d7:{label:'7天', due:168}};
+
+function postCardHtml(accName, p, elapsedH){
+  var slotHtml = Object.keys(SLOT_META).map(function(key){
+    var meta = SLOT_META[key];
+    var m = p.metrics && p.metrics[key];
+    var due = elapsedH===null || elapsedH >= meta.due-4;
+    var remain = elapsedH===null ? null : Math.max(0, Math.ceil(meta.due-elapsedH));
+    if(m){
+      return '<div class="acc-slot done"><div class="acc-slot-h">'+meta.label+'档 · 已读 <span class="acc-src">'+esc(m.source||'手工录入')+'</span></div>'+
+        '<div class="acc-slot-m">赞 <b>'+fmtCount(m.like)+'</b> · 藏 <b>'+fmtCount(m.fav)+'</b> · 评 <b>'+fmtCount(m.cmt)+'</b></div>'+
+        '<div class="acc-slot-meta">读取于 '+fmtDT(m.readAt)+(m.note?' · '+esc(m.note):'')+'</div>'+
+        '<div class="acc-slot-acts"><button class="acc-mini" type="button" data-slot-edit="'+key+'">重录</button><button class="acc-mini" type="button" data-slot-clear="'+key+'">清除</button></div></div>';
+    }
+    if(due){
+      return '<div class="acc-slot ready"><div class="acc-slot-h">'+meta.label+'档 · 待读取</div>'+
+        '<div class="acc-slot-acts"><button class="acc-mini" type="button" data-slot-manual="'+key+'">手工录入</button><button class="acc-mini" type="button" data-slot-cmd="'+key+'">中控台读取</button></div></div>';
+    }
+    return '<div class="acc-slot wait"><div class="acc-slot-h">'+meta.label+'档 · 未到窗口</div><div class="acc-slot-meta">约还需 '+remain+' 小时到读取时间</div></div>';
   }).join('');
-  bl.querySelectorAll('[data-xbind-btn]').forEach(function(b){
+  return '<div class="xpost acc-post" data-post-title="'+encodeURIComponent(p.title)+'">'+
+    '<div class="xpost-h"><span class="xpost-t">《'+esc(p.title)+'》</span><span class="xpost-pub">✓ 已发布</span><span class="xpost-date">发布于 '+fmtDT(p.pubAt)+'</span></div>'+
+    (p.link?'<div class="acc-post-link">笔记链接：'+esc(p.link)+'</div>':'')+
+    '<div class="acc-slots">'+slotHtml+'</div></div>';
+}
+
+function openMetricModal(accName, p, key, sourceDefault){
+  var m = (p.metrics && p.metrics[key]) || {};
+  var dayLabel = SLOT_META[key].label+'档';
+  var body =
+    '<div class="acc-fld"><label>'+dayLabel+' · 点赞（支持 1.2w / 3k / 4500）</label><input id="accMLike" type="text" value="'+(m.like!=null?m.like:'')+'" placeholder="如 1.2w 或 1200"></div>'+
+    '<div class="acc-fld"><label>'+dayLabel+' · 收藏</label><input id="accMFav" type="text" value="'+(m.fav!=null?m.fav:'')+'" placeholder="如 860"></div>'+
+    '<div class="acc-fld"><label>'+dayLabel+' · 评论</label><input id="accMCmt" type="text" value="'+(m.cmt!=null?m.cmt:'')+'" placeholder="如 56"></div>'+
+    '<div class="acc-fld"><label>读取时间</label><input id="accMTime" type="datetime-local" value="'+(m.readAt?String(m.readAt).slice(0,16):nowLocalInput())+'"></div>'+
+    '<div class="acc-fld"><label>数据来源（如实标注，禁止伪造本账号数据）</label><select id="accMSource" class="xbind-in">'+
+      '<option value="手工录入"'+(sourceDefault==='手工录入'?' selected':'')+'>手工录入（我从小红书创作者中心/笔记页抄录）</option>'+
+      '<option value="中控台回填"'+(sourceDefault==='中控台回填'?' selected':'')+'>中控台回填（登录态检索回报）</option></select></div>'+
+    '<div class="acc-fld"><label>备注（选填，如流量来源/投薯条）</label><input id="accMNote" type="text" value="'+esc(m.note||'')+'"></div>';
+  accOpenModal('录入《'+p.title.slice(0,18)+'…》'+dayLabel+'真实互动', body, '保存数据', function(){
+    var like = parseCount($('accMLike').value), fav = parseCount($('accMFav').value), cmt = parseCount($('accMCmt').value);
+    if(like===null && fav===null && cmt===null){ toast('请至少填写一项互动数字'); return false; }
+    if([like,fav,cmt].some(function(v){ return isNaN(v); })){ toast('数字格式无法识别（可用 w/k/万/千 后缀）'); return false; }
+    var tv = $('accMTime').value;
+    var readAt = tv ? new Date(tv).toISOString() : new Date().toISOString();
+    var rr = accRec(accName);
+    rr.rec.posts[p.title].metrics[key] = {like:like, fav:fav, cmt:cmt, readAt:readAt, source:$('accMSource').value, note:$('accMNote').value.trim()};
+    saveAccMap(rr.map);
+    flowMark(9,'done');
+    renderXhs();
+    addMsg('boss','','已保存《'+p.title+'》'+dayLabel+'互动（赞 '+fmtCount(like)+' · 藏 '+fmtCount(fav)+' · 评 '+fmtCount(cmt)+'，来源：'+$('accMSource').value+'）。');
+    toast('已保存真实互动数据');
+  });
+}
+
+function bindPostSlotActions(box, accName, posts){
+  box.querySelectorAll('[data-slot-manual]').forEach(function(b){
     b.addEventListener('click', function(){
-      var name = b.getAttribute('data-xbind-btn');
-      var acc = ACCOUNTS.filter(function(x){ return x.n===name; })[0];
-      if(!acc) return;
-      var v = (bl.querySelector('[data-xbind="'+name+'"]').value||'').trim();
-      if(!v){ toast('请输入小红书号或主页链接'); return; }
-      acc.xhs.id = v; acc.xhs.bound = true;
-      renderXhs(); renderAcc(); renderAccPop(); updateTbAcc();
-      addMsg('boss','','<b>已绑定小红书号：</b>「'+name+'」→ @'+esc(v)+'。之后 1/3/7 天数据读取将按该账号执行。');
-      flowMark(9,'doing');
-      toast('已绑定：'+name+' → @'+v);
+      var key = b.getAttribute('data-slot-manual');
+      var title = decodeURIComponent(b.closest('.acc-post').getAttribute('data-post-title'));
+      openMetricModal(accName, posts[title], key, '手工录入');
     });
   });
-  /* 未来7天发布日历排期（T4统一排期，今日已发自动标记） */
+  box.querySelectorAll('[data-slot-cmd]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var key = b.getAttribute('data-slot-cmd');
+      var title = decodeURIComponent(b.closest('.acc-post').getAttribute('data-post-title'));
+      var p = posts[title];
+      var dayLabel = SLOT_META[key].label;
+      var cmd = '读取账号「'+accName+'」笔记《'+title+'》'+(p.link?'（链接：'+p.link+'）':'')+'截至第'+dayLabel+'天的互动数据：点赞/收藏/评论，回报具体数字，我录入账号数据页。';
+      copyText(cmd);
+      var inp = $('input'); if(inp) inp.value = cmd;
+      addMsg('boss','','<b>已生成中控台读取指令（已复制并填入输入框）：</b><br>'+esc(cmd)+'<br><span style="color:var(--dim);font-size:11px">发送后由中控台以登录态检索该笔记第'+dayLabel+'天互动；回报数字后点本档「手工录入」填回，来源选"中控台回填"。页面不自动编造数字。</span>');
+      toast('读取指令已复制，发送给中控台');
+    });
+  });
+  box.querySelectorAll('[data-slot-edit]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var key = b.getAttribute('data-slot-edit');
+      var title = decodeURIComponent(b.closest('.acc-post').getAttribute('data-post-title'));
+      openMetricModal(accName, posts[title], key, (posts[title].metrics[key]||{}).source || '手工录入');
+    });
+  });
+  box.querySelectorAll('[data-slot-clear]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var key = b.getAttribute('data-slot-clear');
+      var title = decodeURIComponent(b.closest('.acc-post').getAttribute('data-post-title'));
+      var rr = accRec(accName);
+      rr.rec.posts[title].metrics[key] = null;
+      saveAccMap(rr.map);
+      renderXhs();
+      toast('已清除该档数据');
+    });
+  });
+}
+
+function renderReviewBox(accName){
+  var box = $('accReviewBox'); if(!box) return;
+  var rv = {};
+  try{ rv = JSON.parse(localStorage.getItem('aiop_review')||'{}')||{}; }catch(e){}
+  var r = rv[accName];
+  if(!r){ box.innerHTML = ''; return; }
+  var dirs = (r.directions||[]).map(function(d){ return '<li>'+esc(d)+'</li>'; }).join('');
+  box.innerHTML = '<div class="acc-review"><div class="acc-review-h">T6 复盘沉淀 · '+fmtDT(r.updatedAt)+'</div>'+
+    (r.best?'<div class="acc-review-row"><b>最优标题句式：</b>'+esc(r.best.pattern)+'（《'+esc(r.best.title)+'》）</div>':'')+
+    (r.slot?'<div class="acc-review-row"><b>最优发布时段：</b>'+esc(r.slot)+'</div>':'')+
+    (r.rate!=null?'<div class="acc-review-row"><b>爆款率：</b>'+r.rate+'%（赞≥500 计爆款，样本 '+r.sample+' 篇）</div>':'')+
+    '<div class="acc-review-row"><b>下一步优化方向：</b><ol>'+dirs+'</ol></div>'+
+    '<button class="copy-btn" id="accReviewCopy" type="button" style="margin-top:6px">复制沉淀指令（用于下轮生成）</button></div>';
+  var cp = $('accReviewCopy');
+  if(cp) cp.addEventListener('click', function(){
+    var txt = '【复盘沉淀 · 账号「'+accName+'」】\n'+(r.best?'最优句式：'+r.best.pattern+'（《'+r.best.title+'》）\n':'')+(r.slot?'最优时段：'+r.slot+'\n':'')+'优化方向：\n'+(r.directions||[]).map(function(d,i){ return (i+1)+'. '+d; }).join('\n');
+    copyText(txt); toast('沉淀指令已复制');
+  });
+}
+
+/* 数据驱动复盘：爆款率 / 最优句式 / 最优时段 / 优化方向，全部由已录入真实互动算出 */
+function buildReview(accName){
+  var rr = accRec(accName);
+  var posts = Object.keys(rr.rec.posts).map(function(k){ return rr.rec.posts[k]; });
+  var readable = posts.filter(function(p){
+    var m = latestMetric(p);
+    return m && (m.like!=null || m.fav!=null || m.cmt!=null);
+  });
+  if(!readable.length){
+    return {hasData:false, brief:'尚无真实数据，无法复盘', html:'<b>尚无真实数据，先完成发布与读取。</b><br>当前账号「'+esc(accName)+'」没有任何已读取的赞/藏/评记录，复盘不能编造结论。<br>推进顺序：① 图文工厂成稿 → 标记已发布并登记笔记链接/发布时间 → ② 到 1/3/7 天窗口后录入真实互动（手工抄录或中控台回填）→ ③ 再发"复盘"，T6 基于真实数字给出爆款率/最优句式/最优时段/优化方向。'};
+  }
+  var HOT_LIKE = 500;
+  var scored = readable.map(function(p){
+    var m = latestMetric(p);
+    return {p:p, m:m, eng:engOf(m), like:m.like||0, fav:m.fav||0, cmt:m.cmt||0};
+  });
+  scored.sort(function(a,b){ return b.eng-a.eng; });
+  var top = scored[0];
+  var hot = scored.filter(function(s){ return s.like>=HOT_LIKE; }).length;
+  var rate = Math.round(hot/scored.length*100);
+  var pattern = titlePattern(top.p.title);
+  var buckets = {};
+  scored.forEach(function(s){
+    var d = new Date(s.p.pubAtTs || s.p.pubAt);
+    if(isNaN(d.getTime())) return;
+    var b = slotOfHour(d.getHours());
+    (buckets[b] = buckets[b] || []).push(s.eng);
+  });
+  var slotBest = null;
+  var bkeys = Object.keys(buckets);
+  if(bkeys.length>=2){
+    var avg = bkeys.map(function(b){ return {b:b, v:buckets[b].reduce(function(x,y){ return x+y; },0)/buckets[b].length, n:buckets[b].length}; });
+    avg.sort(function(a,b){ return b.v-a.v; });
+    if(avg[0].v > avg[1].v) slotBest = avg[0].b+'（平均互动 '+Math.round(avg[0].v)+'，样本'+avg[0].n+'篇）';
+  }
+  var directions = [];
+  var favRatio = top.fav/Math.max(1, top.like);
+  var cmtRatio = top.cmt/Math.max(1, top.like);
+  if(favRatio < 0.3) directions.push('头部笔记收藏/赞比仅 '+favRatio.toFixed(2)+'，正文补强"可收藏价值"（清单/步骤/价格表），引导收藏。');
+  else directions.push('收藏/赞比 '+favRatio.toFixed(2)+' 健康，延续清单化、可收藏的正文结构。');
+  if(cmtRatio < 0.02) directions.push('评论/赞比仅 '+cmtRatio.toFixed(3)+'，结尾加一个开放式提问钩子引评论。');
+  else directions.push('评论率 '+cmtRatio.toFixed(3)+' 达标，保留现有提问式结尾。');
+  if(hot===0) directions.push('暂无笔记达爆款线（赞≥'+HOT_LIKE+'）：标题强化数字/悬念（当前最优句式：'+pattern+'），继续日更积累样本。');
+  else directions.push('已出 '+hot+' 篇爆款（赞≥'+HOT_LIKE+'），复刻《'+top.p.title.slice(0,18)+'…》的"'+pattern+'"到新选题。');
+  if(scored.length<3) directions.push('样本仅 '+scored.length+' 篇，结论仅供参考，继续发布到 3 篇以上再判断句式与时段。');
+
+  var html = '<b>T6 数据复盘 · 账号「'+esc(accName)+'」（样本 '+scored.length+' 篇已读笔记）</b><br>'+
+    '爆款率：<b>'+rate+'%</b>（赞≥'+HOT_LIKE+' 计爆款，'+hot+'/'+scored.length+'）<br>'+
+    '最优标题句式：<b>'+esc(pattern)+'</b>，来自《'+esc(top.p.title)+'》（赞 '+fmtCount(top.like)+' · 藏 '+fmtCount(top.fav)+' · 评 '+fmtCount(top.cmt)+'）<br>'+
+    (slotBest?'最优发布时段：<b>'+esc(slotBest)+'</b><br>':'最优发布时段：样本不足（需≥2篇不同时段对比），暂不下结论<br>')+
+    '<b>下一步优化方向：</b><ol>'+directions.map(function(d){ return '<li>'+esc(d)+'</li>'; }).join('')+'</ol>'+
+    '<div class="acc-tip">以上全部由本账号已录入的真实互动计算；未录入的笔记不参与统计。</div>';
+
+  var rv = {};
+  try{ rv = JSON.parse(localStorage.getItem('aiop_review')||'{}')||{}; }catch(e){}
+  rv[accName] = {updatedAt:new Date().toISOString(), best:{title:top.p.title, pattern:pattern}, slot:slotBest, rate:rate, sample:scored.length, hot:hot, directions:directions};
+  try{ localStorage.setItem('aiop_review', JSON.stringify(rv)); }catch(e){}
+  return {hasData:true, brief:'复盘完成 · 基于 '+scored.length+' 篇真实数据', html:html};
+}
+
+function openPeerNoteModal(accName, idx){
+  var body = '<div class="acc-fld"><label>对标笔记标题（真实采集）</label><input id="accPNTitle" type="text" placeholder="真实笔记标题"></div>'+
+    '<div class="acc-fld"><label>点赞</label><input id="accPNLike" type="text" placeholder="如 1.8w / 1800"></div>'+
+    '<div class="acc-fld"><label>评论</label><input id="accPNCmt" type="text" placeholder="如 642"></div>'+
+    '<div class="acc-fld"><label>来源</label><select id="accPNSrc" class="xbind-in"><option value="手工录入">手工录入</option><option value="中控台回填">中控台回填</option></select></div>';
+  accOpenModal('录入对标号真实笔记', body, '保存', function(){
+    var t = $('accPNTitle').value.trim();
+    if(!t){ toast('请填写笔记标题'); return false; }
+    var like = parseCount($('accPNLike').value), cmt = parseCount($('accPNCmt').value);
+    if(isNaN(like) || isNaN(cmt)){ toast('赞/评数字格式无法识别'); return false; }
+    var rr = accRec(accName);
+    rr.rec.peers[idx].notes = rr.rec.peers[idx].notes || [];
+    rr.rec.peers[idx].notes.unshift({t:t, like:like, cmt:cmt, source:$('accPNSrc').value, readAt:new Date().toISOString()});
+    saveAccMap(rr.map);
+    renderXhs();
+    toast('对标笔记已录入');
+  });
+}
+
+function bindPeerActions(box, accName){
+  box.querySelectorAll('[data-peer-fresh]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var idx = +b.getAttribute('data-peer-fresh');
+      var pe = accRec(accName).rec.peers[idx];
+      var cmd = '以登录态检索对标账号「'+pe.name+'」'+(pe.link?'（'+pe.link+'）':'')+'近7天高互动笔记，回报标题/赞/评/链接，我录入对标区。';
+      copyText(cmd);
+      var inp = $('input'); if(inp) inp.value = cmd;
+      addMsg('boss','','<b>已生成对标采集指令（已复制并填入输入框）：</b><br>'+esc(cmd));
+      toast('采集指令已复制，发送给中控台');
+    });
+  });
+  box.querySelectorAll('[data-peer-note]').forEach(function(b){
+    b.addEventListener('click', function(){ openPeerNoteModal(accName, +b.getAttribute('data-peer-note')); });
+  });
+  box.querySelectorAll('[data-peer-del]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var rr = accRec(accName);
+      rr.rec.peers.splice(+b.getAttribute('data-peer-del'), 1);
+      saveAccMap(rr.map);
+      renderXhs();
+      toast('已移除对标号');
+    });
+  });
+}
+
+function renderXhs(){
+  hydrateAccXhs();
+  var bl = $('xhsBindList'), pd = $('xhsPosts'), pp = $('xhsPeers');
+  var cur = curAcc();
+  var curName = $('accCurName'); if(curName) curName.textContent = '· 当前账号：'+cur.n;
+
+  /* ---- 小红书号绑定（全账号，格式校验 + 持久化） ---- */
+  if(bl){
+    bl.innerHTML = ACCOUNTS.map(function(a){
+      var x = a.xhs || {bound:false,id:'',url:''};
+      return '<div class="xbind-row"><span class="xbind-name">'+esc(a.n)+'</span>'+
+        '<span class="xbind-st '+(x.bound?'bound':'unbound')+'">'+(x.bound?'已绑定':'未绑定')+'</span>'+
+        '<input class="xbind-in" data-xbind="'+a.n+'" placeholder="小红书号/主页链接，如 xhs_chao24h 或 xiaohongshu.com/user/profile/..."'+(x.bound?' value="'+esc(x.id)+'"':'')+'>'+
+        '<button class="xbind-btn" type="button" data-xbind-btn="'+a.n+'">'+(x.bound?'更新绑定':'绑定')+'</button>'+
+        (x.bound&&x.url?'<div class="xbind-url">'+esc(x.url)+'</div>':'')+'</div>';
+    }).join('');
+    bl.querySelectorAll('[data-xbind-btn]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var name = b.getAttribute('data-xbind-btn');
+        var acc = ACCOUNTS.filter(function(x){ return x.n===name; })[0];
+        if(!acc) return;
+        var v = (bl.querySelector('[data-xbind="'+name+'"]').value||'').trim();
+        var norm = normXhsInput(v);
+        if(norm.error){ toast(norm.error); return; }
+        var rr = accRec(name);
+        rr.rec.xhs = {bound:true, id:norm.id, url:norm.url};
+        saveAccMap(rr.map);
+        hydrateAccXhs();
+        renderXhs(); renderAcc(); renderAccPop(); updateTbAcc();
+        addMsg('boss','','<b>已绑定小红书号：</b>「'+name+'」→ @'+esc(norm.id)+(norm.url?'（'+esc(norm.url)+'）':'')+'。1/3/7 天数据读取将按该账号执行。');
+        toast('已绑定：'+name+' → @'+norm.id);
+      });
+    });
+  }
+
+  /* ---- 发布日历：今日已发按真实发布记录统计 ---- */
   var sc = $('xhsSched');
   if(sc){
     var wk = ['日','一','二','三','四','五','六'];
     var now = new Date();
-    var totalPub = 0;
-    try{ var pp0 = JSON.parse(localStorage.getItem('aiop_pub')||'{}'); Object.keys(pp0).forEach(function(k){ totalPub += (pp0[k]||[]).length; }); }catch(e){}
+    var totalPub = 0, todayPub = 0;
+    var mAll = accMap();
+    Object.keys(mAll).forEach(function(an){
+      var posts = mAll[an].posts || {};
+      Object.keys(posts).forEach(function(k){
+        totalPub++;
+        var ts = posts[k].pubAtTs;
+        if(ts){ var d = new Date(ts); if(d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()) todayPub++; }
+      });
+    });
     sc.innerHTML = '<div class="sched-strip">' + [0,1,2,3,4,5,6].map(function(d){
       var dt = new Date(now.getTime() + d*86400000);
       var md = (dt.getMonth()+1)+'/'+dt.getDate();
       var today = d===0;
-      var plan = today
-        ? (totalPub>0 ? '<b style="color:#4ADE80">已发 '+totalPub+' 篇</b>' : '待发 · 素人帖×1')
-        : (d%2===1 ? '素人帖×1' : '攻略帖×1');
+      var plan = today ? (todayPub>0?'<b style="color:#4ADE80">今日已发 '+todayPub+' 篇</b>':'待发 · 素人帖×1') : (d%2===1?'素人帖×1':'攻略帖×1');
       return '<div class="sched-day'+(today?' today':'')+'" data-day="'+d+'"><div class="sd-w">'+(today?'今':'周'+wk[dt.getDay()])+'</div><div class="sd-d">'+md+'</div><div class="sd-p">'+plan+'</div></div>';
-    }).join('') + '</div><div class="sched-note">点击任意日期查看当日计划；发布时间建议 21:00–23:00 夜场高峰（依据复盘优化方向）。发布后对应日期自动标记"已发"。</div>';
+    }).join('') + '</div><div class="sched-note">点击日期查看当日建议排期；发布时段是否最优由复盘用真实数据对比后给出，未复盘前不预设"夜场高峰"结论。</div>';
     sc.querySelectorAll('.sched-day').forEach(function(sd){
       sd.addEventListener('click', function(){
         var d = +sd.getAttribute('data-day');
-        toast(d===0 ? (totalPub>0?'今日已发布 '+totalPub+' 篇，1/3/7天后可让T6复盘读取数据':'今日计划：素人种草帖×1，建议 21:00-23:00 发布') : ('第'+(d+1)+'天计划：'+(d%2===1?'素人种草帖×1（早9:00 或 晚21:00）':'攻略帖×1（早10:00 或 晚21:00）')));
+        toast(d===0 ? (todayPub>0?'今日已发布 '+todayPub+' 篇，到 1/3/7 天窗口后读取互动数据':'今日计划：素人种草帖×1，发布后登记笔记链接与时间') : ('第'+(d+1)+'天建议：'+(d%2===1?'素人种草帖×1':'攻略帖×1')+'，发布时间记录后用于复盘对比'));
       });
     });
   }
+
+  /* ---- 当前账号发布记录 + 1/3/7 天真实数据槽 ---- */
   if(pd){
-    pd.innerHTML = ACCOUNTS.map(function(a){
-      if(!a.posts || !a.posts.length) return '';
-      return a.posts.map(function(p){
-        return '<div class="xpost"><div class="xpost-h"><span class="xpost-t">'+esc(p.t)+'</span><span class="xpost-type">'+p.type+'</span>'+(p.pub?'<span class="xpost-pub">✓ 已发布</span>':'')+'<span class="xpost-date">'+p.date+'</span></div>'+
-          '<div class="xpost-m"><span>点赞 <b>'+p.like+'</b></span><span>收藏 <b>'+p.fav+'</b></span><span>评论 <b>'+p.cmt+'</b></span><span>私信转化 <b>'+(p.ds?p.ds+' 人':'—')+'</b></span></div>'+
-          '<div class="xpost-days"><span class="xday '+(p.d1==='已读'?'done':'')+'">1天 '+(p.d1||'待读')+'</span><span class="xday '+(p.d3==='已读'?'done':'')+'">3天 '+(p.d3||'待读')+'</span><span class="xday '+(p.d7==='已读'?'done':'')+'">7天 '+(p.d7||'待读')+'</span></div></div>';
+    var rr = accRec(cur.n);
+    var posts = rr.rec.posts;
+    var keys = Object.keys(posts);
+    if(!keys.length){
+      pd.innerHTML = '<div class="np-empty">「'+esc(cur.n)+'」尚无真实发布记录。在图文工厂生成成稿 → 点「标记已发布」并登记笔记链接与发布时间，即进入 1/3/7 天追踪。</div>';
+    } else {
+      pd.innerHTML = keys.map(function(k){
+        var p = posts[k];
+        var elapsedH = p.pubAtTs ? ((Date.now()-p.pubAtTs)/3600000) : null;
+        return postCardHtml(cur.n, p, elapsedH);
       }).join('');
-    }).join('') || '<div class="np-empty">暂无发布记录。生成并复制成稿后会自动计入。</div>';
+      bindPostSlotActions(pd, cur.n, posts);
+    }
+    renderReviewBox(cur.n);
   }
+
+  /* ---- 同类对标号（诚实态：未录入显示待真实采集，不展示第三方拆解榜） ---- */
   if(pp){
-    pp.innerHTML = ACCOUNTS.map(function(a){
-      if(!a.peers || !a.peers.length) return '';
-      return a.peers.map(function(pe){
-        return '<div class="xpeer"><div class="xpeer-h"><span class="xpeer-name">'+esc(pe.name)+'</span><span class="xpeer-link">'+esc(pe.link)+'</span><span style="flex:1"></span><button class="xbind-btn" data-peer-fresh="'+a.n+'">收集最新</button></div>'+
-          pe.notes.map(function(n){
-            return '<div class="xpeer-note"><span class="t">'+esc(n.t)+'</span><span class="d">赞 '+n.like+' · 评 '+n.cmt+'</span></div>';
-          }).join('')+'</div>';
+    var pr = accRec(cur.n);
+    var peers = pr.rec.peers || [];
+    if(!peers.length){
+      pp.innerHTML = '<div class="np-empty acc-peer-empty">待真实采集：尚未录入对标号。在下方添加你真实关注的同城/同品类账号；或点「派单采集」由中控台以登录态检索近7天高互动笔记后回填。这里不展示第三方拆解榜单。</div>';
+    } else {
+      pp.innerHTML = peers.map(function(pe, idx){
+        var notes = (pe.notes||[]).map(function(n){
+          return '<div class="xpeer-note"><span class="t">'+esc(n.t)+'</span><span class="d">赞 '+fmtCount(parseCount(n.like))+' · 评 '+fmtCount(parseCount(n.cmt))+(n.source?' · '+esc(n.source):'')+'</span></div>';
+        }).join('');
+        return '<div class="xpeer"><div class="xpeer-h"><span class="xpeer-name">'+esc(pe.name)+'</span>'+(pe.link?'<span class="xpeer-link">'+esc(pe.link)+'</span>':'')+'<span style="flex:1"></span>'+
+          '<button class="xbind-btn" type="button" data-peer-fresh="'+idx+'">派单采集</button>'+
+          '<button class="xbind-btn acc-peer-note-btn" type="button" data-peer-note="'+idx+'">录入笔记</button>'+
+          '<button class="xbind-btn acc-peer-del" type="button" data-peer-del="'+idx+'">移除</button></div>'+notes+'</div>';
       }).join('');
-    }).join('') || '<div class="np-empty">暂无对标号。</div>';
-    pp.querySelectorAll('[data-peer-fresh]').forEach(function(b){
-      b.addEventListener('click', function(){
-        var name = b.getAttribute('data-peer-fresh');
-        addMsg('boss','','<b>已派单 T1 情报官：</b>收集「'+name+'」对标小红书号近7天高互动笔记，回填对标区（当前为参考榜单）。');
-        toast('已派单：对标号内容收集中…');
-      });
-    });
+    }
+    bindPeerActions(pp, cur.n);
   }
 }
+
 var xr = $('xhsRefresh');
 if(xr){ xr.addEventListener('click', function(){
-  addMsg('boss','','<b>已派单中控台：</b>按绑定账号读取 1/3/7 天发布数据（点赞/收藏/评论/私信转化），回填数据区并供复盘使用。');
-  toast('已派单：发布数据读取中…');
-  flowMark(9,'done');
+  var rr = accRec(CUR_ACC);
+  var unread = [];
+  Object.keys(rr.rec.posts).forEach(function(k){
+    var p = rr.rec.posts[k];
+    Object.keys(SLOT_META).forEach(function(key){ if(!(p.metrics && p.metrics[key])) unread.push({p:p, key:key}); });
+  });
+  if(!unread.length){ toast('本账号所有已发布笔记的1/3/7档均已读取'); return; }
+  var cmd = '按账号「'+CUR_ACC+'」读取以下未读档位互动（赞/藏/评），回报具体数字：\n' + unread.map(function(u){
+    return '· 《'+u.p.title+'》'+SLOT_META[u.key].label+'档'+(u.p.link?' '+u.p.link:'');
+  }).join('\n');
+  copyText(cmd);
+  var inp = $('input'); if(inp) inp.value = cmd;
+  addMsg('boss','','<b>已派单中控台：</b>本账号有 '+unread.length+' 个未读档位，读取指令已复制并填入输入框。中控台以登录态检索回报后，逐档点「手工录入」填回（来源选"中控台回填"），页面不自动编造数字。');
+  toast('读取指令已复制，共 '+unread.length+' 个未读档');
 }); }
+
+/* 对标号添加（当前账号） */
+var pa = $('accPeerAddBtn');
+if(pa){ pa.addEventListener('click', function(){
+  var name = $('accPeerName').value.trim(), link = $('accPeerLink').value.trim();
+  if(!name){ toast('请填写对标号昵称'); return; }
+  var rr = accRec(CUR_ACC);
+  rr.rec.peers.push({name:name, link:link, notes:[]});
+  saveAccMap(rr.map);
+  $('accPeerName').value = ''; $('accPeerLink').value = '';
+  renderXhs();
+  addMsg('boss','','已添加对标号「'+name+'」。可点「派单采集」让中控台登录态检索其近7天笔记，或手工录入真实笔记。');
+  toast('对标号已添加');
+}); }
+
 renderXhs();
+/* 启动恢复：把 localStorage 中的小红书绑定同步到账号矩阵侧栏与顶栏 */
+hydrateAccXhs();
+if(typeof renderAcc==='function') renderAcc();
+if(typeof renderAccPop==='function') renderAccPop();
+if(typeof updateTbAcc==='function') updateTbAcc();
 
 /* ================= 到店打法 · 内容生成模板（动态跟随人设） ================= */
 function getPersonaVars(){
@@ -3524,8 +4200,9 @@ function genResult(idx){
   if(idx===4){ // T5 私信转化：高转化信号识别 + 5问5答 + 钩子话术
     return {html:'<b>评论区高转化信号识别（按意向分级）：</b><br><span class="sig-r">🔴 高意向</span>求链接 / 怎么买 / 多少钱 / 在哪报名 / 有优惠吗 → <b>30分钟内私信 + 企微承接</b><br><span class="sig-y">🟡 中意向</span>收藏了 / 改天去 / 方便吗 / 能带娃吗 → 评论区回复引导 + 拉体验群<br><span class="sig-g">🟢 弱意向</span>表情包 / 路过 / 仅点赞 → 不回，留给C号顶评养热评<br><b>评论区高频问题 TOP5 + 话术：</b><br>Q1 多少钱？→ 单次9.9先体验，觉得值再谈月卡<br>Q2 24h安全吗？→ 扫码进出+全时段监控+女性友好标识+姐妹陪练群<br>Q3 没基础能练吗？→ 前7天免费入门带练<br>Q4 晚上人少尴尬吗？→ 深夜场反而自在，戴耳机撸自己的<br>Q5 离我远怎么办？→ 先来体验，合适再办，不推销<br><b>私信承接脚本：</b>"潮州本地姐妹，单次体验安排上"→ 首条私信自动发体验券 → 企微建群 → 送次数裂变<br><button class="copy-btn" data-copy="评论区话术全案：信号分级+5问5答+私信承接（见线程卡T5）" id="cpT5" style="margin-top:5px">复制话术</button>', brief:'高转化信号分级 + 5问5答 + 钩子话术已出'};
   }
-  if(idx===5){ // T6 数据复盘
-    return {html:'<b>3个优化方向（已沉淀，下次生成自动采用）：</b><br>① 标题改"地标+悬念"句式（如凌晨2点/第1天/账单全公开）<br>② 关键词加强埋词："潮州24h健身 / 潮州健身房 / 潮州探店"<br>③ 发布时间切21:00–23:00 夜场流量高峰', brief:'复盘完成 · 3优化方向已沉淀'};
+  if(idx===5){ // T6 数据复盘：数据驱动，无真实数据时明确提示，不输出固定假结论
+    var r5 = buildReview(typeof CUR_ACC!=='undefined'?CUR_ACC:'');
+    return {html:r5.html, brief:r5.brief};
   }
   if(idx===6){ // T7 成本管家
     return {html:'<b>本周算力成本表：</b><br>选题/改写用低档模型 · 终稿用高档模型 · 缓存命中免计费 · 短对话省token<br>预估较全高档方案节省 40% 成本', brief:'成本方案已出（预估节省40%）'};
@@ -3542,16 +4219,22 @@ function bindResultCopy(idx){
 function send(text){
   if(!text || !text.trim()) return;
   addMsg('user','',text);
-  /* ① 复盘/数据链路：T6 */
+  /* ① 复盘/数据链路：T6（数据驱动，无数据不编造） */
   if(/复盘|1天|3天|7天|读数据|涨跌|优化方向/.test(text)){
-    setThread(5,'working','正在读取 1/3/7 天账号数据','按绑定账号拉取互动');
+    setThread(5,'working','正在汇总本账号已录入的真实互动','本地数据驱动，不编造结论');
     setTimeout(function(){
-      var rr6 = genResult(5);
-      setThread(5,'done','复盘完成',rr6.html);
-      flowMark(9,'done'); flowMark(10,'done'); flowMark(11,'done');
-      addMsg('thread','T6','#4ADE80','<b>复盘回报（结果已出）：</b><br>'+rr6.html);
-      addMsg('boss','','<b>复盘闭环完成。</b>① 1/3/7天数据已按账号读取 ② T6 输出优化方向 ③ 已沉淀供下次生成使用。建议直接说"按人设生成内容"继续下一轮。');
-    }, 900);
+      var rr6 = buildReview(CUR_ACC);
+      setThread(5,'done',rr6.brief,rr6.html);
+      if(rr6.hasData){ flowMark(9,'done'); flowMark(10,'done'); flowMark(11,'done'); }
+      else { flowMark(9,'doing'); }
+      renderXhs();
+      addMsg('thread','T6','#4ADE80','<b>复盘回报：</b><br>'+rr6.html);
+      if(rr6.hasData){
+        addMsg('boss','','<b>复盘闭环完成。</b>爆款率/最优句式/最优时段均由真实录入数据算出，优化方向已沉淀到「账号数据」页，可点"复制沉淀指令"用于下轮生成。');
+      } else {
+        addMsg('boss','','<b>暂无真实数据，复盘未强行出结论。</b>先完成发布登记与1/3/7天互动读取，再发"复盘"。');
+      }
+    }, 600);
     return;
   }
   /* ①a 实时采集分支：地域×行业 实时爆款采集（对话端登录态检索后回填） */
